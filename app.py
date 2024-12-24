@@ -83,8 +83,8 @@ jogadores['vitórias'] = jogadores['vitórias'].astype(int)
 jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
-jogadores.sort_values('aproveitamento', ascending=False)
-
+# jogadores.sort_values('aproveitamento', ascending=False)
+jogadores = jogadores.reset_index()
 
 # jogadores = {
 #     "jogadores": ["Benchi", "Bruno", "Diego", "Gustavo", "JC", "Marcelo", "Renato"],
