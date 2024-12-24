@@ -86,12 +86,12 @@ jogadores = jogadores[~jogadores.index.str.contains("Outro")]
 jogadores.sort_values('aproveitamento', ascending=False)
 
 
-jogadores = {
-    "jogadores": ["Benchi", "Bruno", "Diego", "Gustavo", "JC", "Marcelo", "Renato"],
-    "vitórias": [4, 2, 4, 1, 1, 1, 1],
-    "derrotas": [1, 1, 3, 2, 1, 2, 0],
-    "aproveitamento": [80.0, 66.67, 57.14, 33.33, 50.0, 33.33, 100.0]
-}
+# jogadores = {
+#     "jogadores": ["Benchi", "Bruno", "Diego", "Gustavo", "JC", "Marcelo", "Renato"],
+#     "vitórias": [4, 2, 4, 1, 1, 1, 1],
+#     "derrotas": [1, 1, 3, 2, 1, 2, 0],
+#     "aproveitamento": [80.0, 66.67, 57.14, 33.33, 50.0, 33.33, 100.0]
+# }
 
 df = jogadores.copy()
 
