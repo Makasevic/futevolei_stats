@@ -2,29 +2,40 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Título do app
-st.title("Exemplo de Gráfico no Streamlit")
-
-# Criando um DataFrame de exemplo
+# Dados da tabela
 data = {
-    "Categoria": ["A", "B", "C", "D"],
-    "Valor": [10, 20, 30, 40]
+    "jogadores": ["Benchi", "Bruno", "Diego", "Gustavo", "JC", "Marcelo", "Renato"],
+    "vitórias": [4, 2, 4, 1, 1, 1, 1],
+    "derrotas": [1, 1, 3, 2, 1, 2, 0],
+    "aproveitamento": [80.0, 66.67, 57.14, 33.33, 50.0, 33.33, 100.0]
 }
+
 df = pd.DataFrame(data)
 
-# Exibindo o DataFrame
-st.subheader("Tabela de Dados")
+# Título do app
+st.title("Análise de Desempenho dos Jogadores")
+
+# Mostra a tabela
+st.subheader("Tabela de Desempenho")
 st.dataframe(df)
 
-# Criando um gráfico de barras
-st.subheader("Gráfico Interativo")
-fig = px.bar(df, x="Categoria", y="Valor", title="Gráfico de Barras")
-st.plotly_chart(fig)
+# Gráfico de barras vermelhas (vitórias)
+st.subheader("Gráfico de Vitórias")
+fig_vitorias = px.bar(df, x="jogadores", y="vitórias", title="Vitórias por Jogador",
+                      labels={"vitórias": "Vitórias", "jogadores": "Jogadores"},
+                      color_discrete_sequence=["red"])
+st.plotly_chart(fig_vitorias)
 
-# Entrada interativa
-st.subheader("Personalize o gráfico")
-incremento = st.slider("Adicione um valor a cada barra", min_value=0, max_value=20, step=1)
-df["Valor Incrementado"] = df["Valor"] + incremento
+# Gráfico de barras azuis (derrotas)
+st.subheader("Gráfico de Derrotas")
+fig_derrotas = px.bar(df, x="jogadores", y="derrotas", title="Derrotas por Jogador",
+                      labels={"derrotas": "Derrotas", "jogadores": "Jogadores"},
+                      color_discrete_sequence=["blue"])
+st.plotly_chart(fig_derrotas)
 
-fig2 = px.bar(df, x="Categoria", y="Valor Incrementado", title="Gráfico Incrementado")
-st.plotly_chart(fig2)
+# Gráfico de linha (aproveitamento)
+st.subheader("Gráfico de Aproveitamento")
+fig_aproveitamento = px.line(df, x="jogadores", y="aproveitamento", title="Aproveitamento por Jogador",
+                             labels={"aproveitamento": "Aproveitamento (%)", "jogadores": "Jogadores"},
+                             markers=True)
+st.plotly_chart(fig_aproveitamento)
