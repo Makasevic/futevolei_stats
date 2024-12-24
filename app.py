@@ -98,10 +98,6 @@ df = jogadores.copy()
 # Título do app
 st.title("Análise de Desempenho dos Jogadores")
 
-# Mostra a tabela
-st.subheader("Tabela de Desempenho")
-st.dataframe(df)
-
 # Gráfico de barras vermelhas (vitórias)
 st.subheader("Gráfico de Vitórias")
 fig_vitorias = px.bar(df, x="jogadores", y="vitórias", title="Vitórias por Jogador",
@@ -122,3 +118,7 @@ fig_aproveitamento = px.line(df, x="jogadores", y="aproveitamento", title="Aprov
                              labels={"aproveitamento": "Aproveitamento (%)", "jogadores": "Jogadores"},
                              markers=True)
 st.plotly_chart(fig_aproveitamento)
+
+# Mostra a tabela
+st.subheader("Tabela de Desempenho")
+st.dataframe(df)
