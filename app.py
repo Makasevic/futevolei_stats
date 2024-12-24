@@ -84,7 +84,6 @@ jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
 jogadores.sort_values('aproveitamento', ascending=False)
-plot_charts(jogadores, 'jogador')
 
 df = jogadores.copy()
 
