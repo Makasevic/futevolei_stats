@@ -104,7 +104,8 @@ def preparar_dados_confrontos_jogadores(df):
     saldo_final = saldos.reset_index()
     saldo_final.rename(columns={"index": "Jogador"}, inplace=True)
     saldo_final = saldo_final.set_index('Jogador')
-    return saldo_final.style.background_gradient(cmap="RdBu")
+    saldo_final = saldo_final.style.background_gradient(cmap="coolwarm")
+    return saldo_final
 
 
 def preparar_dados_controntos_duplas(df):
@@ -130,7 +131,8 @@ def preparar_dados_controntos_duplas(df):
     saldo_final_duplas = saldos_duplas.reset_index()
     saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
     saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
-    return saldo_final_duplas.style.background_gradient(cmap="RdBu")
+    saldo_final_duplas = saldo_final_duplas.style.background_gradient(cmap="coolwarm")
+    return saldo_final_duplas
 
 
 def exibir_graficos(df, eixo_x, titulo):
@@ -171,13 +173,13 @@ with tab1:
     st.title("Análise de Desempenho dos Jogadores")
     exibir_graficos(jogadores, "jogadores", "Jogador")
     st.dataframe(jogadores.set_index("jogadores"))
-    st.dataframe(preparar_dados_confrontos_jogadores(df))
+    st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True)
 
 with tab2:
     st.title("Análise de Desempenho das Duplas")
     exibir_graficos(duplas, "duplas", "Dupla")
     st.dataframe(duplas.set_index("duplas"))
-    st.dataframe(preparar_dados_controntos_duplas(df))
+    st.dataframe(preparar_dados_controntos_duplas(df), use_container_width=True)
 
 with tab3:
     st.title("Jogos Registrados")
