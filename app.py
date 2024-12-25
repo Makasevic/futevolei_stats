@@ -86,13 +86,6 @@ jogadores = jogadores[~jogadores.index.str.contains("Outro")]
 # jogadores.sort_values('aproveitamento', ascending=False)
 jogadores = jogadores.reset_index()
 
-# jogadores = {
-#     "jogadores": ["Benchi", "Bruno", "Diego", "Gustavo", "JC", "Marcelo", "Renato"],
-#     "vitórias": [4, 2, 4, 1, 1, 1, 1],
-#     "derrotas": [1, 1, 3, 2, 1, 2, 0],
-#     "aproveitamento": [80.0, 66.67, 57.14, 33.33, 50.0, 33.33, 100.0]
-# }
-
 df = jogadores.copy()
 
 # Título do app
@@ -127,7 +120,55 @@ with tab1:
     st.subheader("Tabela de Desempenho")
     st.dataframe(df)
 
+
+duplas_w = [x + " e " + y for x, y in df.iloc[:, 0:2].values]
+duplas_w = pd.DataFrame(duplas_w)
+duplas_w = duplas_w.value_counts()
+
+duplas_l = [x + " e " + y for x, y in df.iloc[:, 2:4].values]
+duplas_l = pd.DataFrame(duplas_l)
+duplas_l = duplas_l.value_counts()
+
+duplas = sorted(set(list(duplas_w.index) + list(duplas_l.index)))
+duplas_w = duplas_w.reindex(index=duplas).fillna(0)
+duplas_l = duplas_l.reindex(index=duplas).fillna(0)
+
+duplas_w_pct = duplas_w / (duplas_w + duplas_l) * 100
+duplas = pd.concat([duplas_w, duplas_l, duplas_w_pct], axis=1)
+duplas = duplas.rename_axis("duplas")
+duplas.columns = ['vitórias','derrotas','aproveitamento']
+duplas = duplas.reset_index()
+duplas['vitórias'] = duplas['vitórias'].astype(int)
+duplas['derrotas'] = duplas['derrotas'].astype(int)
+duplas = duplas.set_index('duplas')
+duplas = duplas[~duplas.index.str.contains("Outro")]
+duplas.sort_values('aproveitamento', ascending=False)
+
+
+df = jogadores.copy()
+
 with tab2:
+        # Gráfico de barras vermelhas (vitórias)
+    st.subheader("Gráfico de Vitórias")
+    fig_vitorias = px.bar(df, x="jogadores", y="vitórias", title="Vitórias por Jogador",
+                          labels={"vitórias": "Vitórias", "jogadores": "Jogadores"},
+                          color_discrete_sequence=["red"])
+    st.plotly_chart(fig_vitorias)
+    
+    # Gráfico de barras azuis (derrotas)
+    st.subheader("Gráfico de Derrotas")
+    fig_derrotas = px.bar(df, x="jogadores", y="derrotas", title="Derrotas por Jogador",
+                          labels={"derrotas": "Derrotas", "jogadores": "Jogadores"},
+                          color_discrete_sequence=["blue"])
+    st.plotly_chart(fig_derrotas)
+    
+    # Gráfico de linha (aproveitamento)
+    st.subheader("Gráfico de Aproveitamento")
+    fig_aproveitamento = px.line(df, x="jogadores", y="aproveitamento", title="Aproveitamento por Jogador",
+                                 labels={"aproveitamento": "Aproveitamento (%)", "jogadores": "Jogadores"},
+                                 markers=True)
+    st.plotly_chart(fig_aproveitamento)
+    
     # Mostra a tabela
     st.subheader("Tabela de Desempenho")
     st.dataframe(df)
