@@ -4,7 +4,6 @@ import plotly.express as px
 from datetime import datetime
 import requests
 
-# Funções e configuração (mantém as mesmas)
 def extrair_dados(page_data):
     winners = []
     dupla1 = page_data['properties'].get('Dupla 1')
@@ -23,7 +22,7 @@ def extrair_dados(page_data):
     if submission_prop and submission_prop.get('type') == 'created_time':
         submission_date = submission_prop.get('created_time')
         submission_date = [datetime.strptime(submission_date, "%Y-%m-%dT%H:%M:%S.%fZ").date()]
-    return winners + losers + submission_date
+    return winners+losers+submission_date
 
 def get_pages(num_pages=None):
     url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
@@ -57,12 +56,13 @@ df = []
 for page in pages:
     df.append(extrair_dados(page))
 df = pd.DataFrame(df)
-df.columns = ['winner1', 'winner2', 'loser1', 'loser2', 'date']
+df.columns = ['winner1','winner2','loser1','loser2','date']
 df = df.set_index('date')
 
 for i in range(df.shape[0]):
     df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
+
 
 jogador_w = pd.DataFrame(df.iloc[:, 0:2].values.reshape(-1))
 jogador_w = jogador_w.value_counts()
@@ -77,13 +77,21 @@ jogador_l = jogador_l.reindex(index=jogadores_list).fillna(0)
 jogador_w_pct = jogador_w / (jogador_w + jogador_l) * 100
 jogadores = pd.concat([jogador_w, jogador_l, jogador_w_pct], axis=1)
 jogadores = jogadores.rename_axis("jogadores")
-jogadores.columns = ['vitórias', 'derrotas', 'aproveitamento']
+jogadores.columns = ['vitórias','derrotas','aproveitamento']
 jogadores = jogadores.reset_index()
 jogadores['vitórias'] = jogadores['vitórias'].astype(int)
 jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
+# jogadores.sort_values('aproveitamento', ascending=False)
 jogadores = jogadores.reset_index()
+
+# jogadores = {
+#     "jogadores": ["Benchi", "Bruno", "Diego", "Gustavo", "JC", "Marcelo", "Renato"],
+#     "vitórias": [4, 2, 4, 1, 1, 1, 1],
+#     "derrotas": [1, 1, 3, 2, 1, 2, 0],
+#     "aproveitamento": [80.0, 66.67, 57.14, 33.33, 50.0, 33.33, 100.0]
+# }
 
 df = jogadores.copy()
 
@@ -93,12 +101,33 @@ st.title("Análise de Desempenho dos Jogadores")
 # Abas
 tab1, tab2 = st.tabs(["Tabela 1", "Tabela 2"])
 
-# Conteúdo da primeira aba
 with tab1:
-    st.subheader("Tabela de Desempenho - Aba 1")
+    # Gráfico de barras vermelhas (vitórias)
+    st.subheader("Gráfico de Vitórias")
+    fig_vitorias = px.bar(df, x="jogadores", y="vitórias", title="Vitórias por Jogador",
+                          labels={"vitórias": "Vitórias", "jogadores": "Jogadores"},
+                          color_discrete_sequence=["red"])
+    st.plotly_chart(fig_vitorias)
+    
+    # Gráfico de barras azuis (derrotas)
+    st.subheader("Gráfico de Derrotas")
+    fig_derrotas = px.bar(df, x="jogadores", y="derrotas", title="Derrotas por Jogador",
+                          labels={"derrotas": "Derrotas", "jogadores": "Jogadores"},
+                          color_discrete_sequence=["blue"])
+    st.plotly_chart(fig_derrotas)
+    
+    # Gráfico de linha (aproveitamento)
+    st.subheader("Gráfico de Aproveitamento")
+    fig_aproveitamento = px.line(df, x="jogadores", y="aproveitamento", title="Aproveitamento por Jogador",
+                                 labels={"aproveitamento": "Aproveitamento (%)", "jogadores": "Jogadores"},
+                                 markers=True)
+    st.plotly_chart(fig_aproveitamento)
+    
+    # Mostra a tabela
+    st.subheader("Tabela de Desempenho")
     st.dataframe(df)
 
-# Conteúdo da segunda aba
 with tab2:
-    st.subheader("Tabela de Desempenho - Aba 2")
-    st.dataframe(df)  # Aqui você pode substituir `df` pelo novo DataFrame no futuro
+    # Mostra a tabela
+    st.subheader("Tabela de Desempenho")
+    st.dataframe(df)
