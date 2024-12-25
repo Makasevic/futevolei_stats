@@ -212,4 +212,4 @@ with tab2:
 
 with tab3:
     st.title("Jogos Registrados")
-    st.dataframe(df)
+    st.dataframe(df.drop(['dupla_winner','dupla_loser'], axis=1))
