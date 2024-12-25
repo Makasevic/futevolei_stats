@@ -65,7 +65,7 @@ for i in range(df.shape[0]):
 
 
 # Abas
-tab1, tab2 = st.tabs(["Jogadores", "Duplas"])
+tab1, tab2, tab3 = st.tabs(["Jogadores", "Duplas", "Jogos"])
 
 jogador_w = pd.DataFrame(df.iloc[:, 0:2].values.reshape(-1))
 jogador_w = jogador_w.value_counts()
@@ -171,3 +171,8 @@ with tab2:
     # Mostra a tabela
     st.subheader("Tabela de Desempenho")
     st.dataframe(duplas.set_index('duplas'))
+
+with tab3:
+        # Mostra a tabela
+    st.subheader("Tabela de Desempenho")
+    st.dataframe(df)
