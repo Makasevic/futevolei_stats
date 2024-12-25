@@ -214,17 +214,17 @@ periodos = ["1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados
 
 with tab1:
     st.title("Análise de Desempenho dos Jogadores")
-    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
+    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True, key="jogadores")
     df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
 
     jogadores = preparar_dados_individuais(df_filtrado)
     exibir_graficos(jogadores, "jogadores", "Jogador")
     st.dataframe(jogadores.set_index("jogadores"))
-    st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True)
+    st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True, key="duplas")
 
 with tab2:
     st.title("Análise de Desempenho das Duplas")
-    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
+    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True, key="jogos")
     df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
 
     duplas = preparar_dados_duplas(df_filtrado)
