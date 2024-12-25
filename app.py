@@ -86,10 +86,12 @@ jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
 jogadores = jogadores.reset_index()
-# Título do app
-st.title("Análise de Desempenho dos Jogadores")
+
 
 with tab1:
+    # Título do app
+    st.title("Análise de Desempenho dos Jogadores")
+    
     # Gráfico de barras vermelhas (vitórias)
     st.subheader("Gráfico de Vitórias")
     fig_vitorias = px.bar(jogadores, x="jogadores", y="vitórias", title="Vitórias por Jogador",
@@ -140,6 +142,9 @@ duplas = duplas[~duplas.index.str.contains("Outro")]
 duplas = duplas.reset_index()
 
 with tab2:
+    # Título do app
+    st.title("Análise de Desempenho das Duplas")
+    
     # Gráfico de barras vermelhas (vitórias)
     st.subheader("Gráfico de Vitórias")
     fig_vitorias = px.bar(duplas.reset_index(), x="duplas", y="vitórias", title="Vitórias por Dupla",
