@@ -85,7 +85,7 @@ jogadores['vitórias'] = jogadores['vitórias'].astype(int)
 jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
-
+jogadores = jogadores.reset_index()
 # Título do app
 st.title("Análise de Desempenho dos Jogadores")
 
@@ -113,7 +113,7 @@ with tab1:
 
     # Mostra a tabela
     st.subheader("Tabela de Desempenho")
-    st.dataframe(jogadores)
+    st.dataframe(jogadores.set_index('jogadores'))
 
 
 duplas_w = [x + " e " + y for x, y in df.iloc[:, 0:2].values]
@@ -137,7 +137,7 @@ duplas['vitórias'] = duplas['vitórias'].astype(int)
 duplas['derrotas'] = duplas['derrotas'].astype(int)
 duplas = duplas.set_index('duplas')
 duplas = duplas[~duplas.index.str.contains("Outro")]
-
+duplas = duplas.reset_index()
 
 with tab2:
     # Gráfico de barras vermelhas (vitórias)
@@ -163,4 +163,4 @@ with tab2:
 
     # Mostra a tabela
     st.subheader("Tabela de Desempenho")
-    st.dataframe(duplas)
+    st.dataframe(duplas.set_index('duplas'))
