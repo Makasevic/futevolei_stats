@@ -64,21 +64,6 @@ for i in range(df.shape[0]):
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 
-# Configurar fundo branco dentro das abas
-st.markdown(
-    """
-    <style>
-    /* Define o fundo branco apenas dentro das abas */
-    div[data-testid="stVerticalBlock"] {
-        background-color: white;
-        padding: 10px;
-        border-radius: 5px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 # Abas
 tab1, tab2 = st.tabs(["Jogadores", "Duplas"])
 
