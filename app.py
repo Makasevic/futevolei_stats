@@ -139,6 +139,24 @@ def preparar_dados_controntos_duplas(df):
     return saldo_final_duplas
 
 
+def filtrar_por_periodo(df, periodo):
+    """Filtra o DataFrame de acordo com o período selecionado."""
+    if periodo == "1 semana":
+        data_inicio = datetime.now() - timedelta(weeks=1)
+    elif periodo == "1 mês":
+        data_inicio = datetime.now() - timedelta(weeks=4)
+    elif periodo == "3 meses":
+        data_inicio = datetime.now() - timedelta(weeks=12)
+    elif periodo == "6 meses":
+        data_inicio = datetime.now() - timedelta(weeks=26)
+    elif periodo == "1 ano":
+        data_inicio = datetime.now() - timedelta(weeks=52)
+    else:  # "Todos os dados"
+        return df
+
+    return df[df.index >= data_inicio.date()]
+
+
 def exibir_graficos(df, eixo_x, titulo):
     """Exibe gráficos de vitórias, derrotas e aproveitamento."""
     st.subheader("Gráfico de Vitórias")
@@ -188,6 +206,16 @@ data = [extrair_dados(page) for page in pages]
 df = pd.DataFrame(data, columns=["winner1", "winner2", "loser1", "loser2", "date"]).set_index("date")
 
 # Ordenar vencedores e perdedores
+df[["winner1", "winner2"]] = df[["winner1", "winner2"]].apply(lambda x: sorted(x), axis=1)
+df[["loser1", "loser2"]] = df[["loser1", "loser2"]].apply(lambda x: sorted(x), axis=1)
+
+# Interface Streamlit
+tab1, tab2, tab3 = st.tabs(["Jogadores", "Duplas", "Jogos"])
+
+# Adicionar seleção de período em cada aba
+periodos = ["1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
+
+# Ordenar vencedores e perdedores
 for i in range(df.shape[0]):
     df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
@@ -195,21 +223,30 @@ for i in range(df.shape[0]):
 jogadores = preparar_dados_individuais(df)
 duplas = preparar_dados_duplas(df)
 
-# Interface Streamlit
-tab1, tab2, tab3 = st.tabs(["Jogadores", "Duplas", "Jogos"])
 
 with tab1:
     st.title("Análise de Desempenho dos Jogadores")
+    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
+    df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
+
+    jogadores = preparar_dados_individuais(df_filtrado)
     exibir_graficos(jogadores, "jogadores", "Jogador")
     st.dataframe(jogadores.set_index("jogadores"))
-    st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True)
+    st.dataframe(preparar_dados_confrontos_jogadores(df_filtrado), use_container_width=True)
 
 with tab2:
     st.title("Análise de Desempenho das Duplas")
+    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
+    df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
+
+    duplas = preparar_dados_duplas(df_filtrado)
     exibir_graficos(duplas, "duplas", "Dupla")
     st.dataframe(duplas.set_index("duplas"))
-    st.dataframe(preparar_dados_controntos_duplas(df), use_container_width=True)
+    st.dataframe(preparar_dados_controntos_duplas(df_filtrado), use_container_width=True)
 
 with tab3:
     st.title("Jogos Registrados")
-    st.dataframe(df.drop(['dupla_winner','dupla_loser'], axis=1))
+    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
+    df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
+
+    st.dataframe(df_filtrado)
