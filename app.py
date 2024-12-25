@@ -157,7 +157,6 @@ def exibir_graficos(df, eixo_x, titulo):
     st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
 
-
 def background_gradient(val, max_val, min_val):
     if val > 0:
         blue_intensity = min(255, int(255 * (val / max_val)))
@@ -172,16 +171,10 @@ def style_dataframe(df):
     max_val = df.max().max()
     min_val = df.min().min()
 
-    def style_row(row):
-        return [background_gradient(val, max_val, min_val) if isinstance(val, (int, float)) else "" for val in row]
+    def style_cell(val):
+        return background_gradient(val, max_val, min_val)
 
-    # Aplicar o estilo a todas as linhas
-    styled_df = df.style.apply(style_row, axis=1)
-
-    # Forçar a aplicação no índice (primeira linha incluída)
-    styled_df.set_properties(subset=df.index, **{"background-color": "none"})
-
-    return styled_df
+    return df.style.applymap(style_cell)
 
         
 # Obtenção e preparação dos dados
