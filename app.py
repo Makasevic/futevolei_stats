@@ -106,8 +106,9 @@ data = [extrair_dados(page) for page in pages]
 df = pd.DataFrame(data, columns=["winner1", "winner2", "loser1", "loser2", "date"]).set_index("date")
 
 # Ordenar vencedores e perdedores
-df.iloc[:, :2] = df.iloc[:, :2].apply(sorted, axis=1)
-df.iloc[:, 2:4] = df.iloc[:, 2:4].apply(sorted, axis=1)
+for i in range(df.shape[0]):
+    df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
+    df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 jogadores = preparar_dados_individuais(df)
 duplas = preparar_dados_duplas(df)
