@@ -104,7 +104,9 @@ def preparar_dados_confrontos_jogadores(df):
     saldo_final = saldos.reset_index()
     saldo_final.rename(columns={"index": "Jogador"}, inplace=True)
     saldo_final = saldo_final.set_index('Jogador')
-    saldo_final = saldo_final.style.applymap(background_gradient)
+    max_val = saldo_final.max().max()
+    min_val = saldo_final.min().min()
+    saldo_final = saldo_final.style.applymap(lambda x: background_gradient(x, max_val, min_val))
     return saldo_final
 
 
@@ -131,7 +133,9 @@ def preparar_dados_controntos_duplas(df):
     saldo_final_duplas = saldos_duplas.reset_index()
     saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
     saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
-    saldo_final_duplas = saldo_final_duplas.style.applymap(background_gradient)
+    max_val = saldo_final_duplas.max().max()
+    min_val = saldo_final_duplas.min().min()
+    saldo_final_duplas = saldo_final_duplas.style.applymap(lambda x: background_gradient(x, max_val, min_val))
     return saldo_final_duplas
 
 
@@ -152,7 +156,8 @@ def exibir_graficos(df, eixo_x, titulo):
                                  markers=True)
     st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
-def background_gradient(val):
+
+def background_gradient(val, max_val, min_val):
     """
     Retorna o estilo para aplicar cores baseado no valor:
     - Azul para valores positivos
@@ -160,14 +165,13 @@ def background_gradient(val):
     """
     if val > 0:
         # Azul para valores positivos
-        blue_intensity = min(255, int(255 * (val / df.max().max())))  # Normalizar para 255
+        blue_intensity = min(255, int(255 * (val / max_val)))  # Normalizar para 255
         return f"background-color: rgba(0, 0, {blue_intensity}, 0.5);"
     elif val < 0:
         # Vermelho para valores negativos
-        red_intensity = min(255, int(255 * (abs(val) / abs(df.min().min()))))  # Normalizar para 255
+        red_intensity = min(255, int(255 * (abs(val) / abs(min_val))))  # Normalizar para 255
         return f"background-color: rgba({red_intensity}, 0, 0, 0.5);"
     else:
-        # Sem cor para valores zero
         return "background-color: none;"
 
         
