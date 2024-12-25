@@ -89,6 +89,18 @@ jogadores = jogadores.reset_index()
 
 
 with tab1:
+
+    st.markdown(
+        """
+        <style>
+        body {
+            background-color: white;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    
     # Título do app
     st.title("Análise de Desempenho dos Jogadores")
     
@@ -97,21 +109,21 @@ with tab1:
     fig_vitorias = px.bar(jogadores, x="jogadores", y="vitórias", title="Vitórias por Jogador",
                           labels={"vitórias": "Vitórias", "jogadores": "Jogadores"},
                           color_discrete_sequence=["red"])
-    st.plotly_chart(fig_vitorias)
+    st.plotly_chart(fig_vitorias, use_container_width=True, config={"staticPlot": True})
 
     # Gráfico de barras azuis (derrotas)
     st.subheader("Gráfico de Derrotas")
     fig_derrotas = px.bar(jogadores, x="jogadores", y="derrotas", title="Derrotas por Jogador",
                           labels={"derrotas": "Derrotas", "jogadores": "Jogadores"},
                           color_discrete_sequence=["blue"])
-    st.plotly_chart(fig_derrotas)
+    st.plotly_chart(fig_derrotas, use_container_width=True, config={"staticPlot": True})
 
     # Gráfico de linha (aproveitamento)
     st.subheader("Gráfico de Aproveitamento")
     fig_aproveitamento = px.line(jogadores, x="jogadores", y="aproveitamento", title="Aproveitamento por Jogador",
                                  labels={"aproveitamento": "Aproveitamento (%)", "jogadores": "Jogadores"},
                                  markers=True)
-    st.plotly_chart(fig_aproveitamento)
+    st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
     # Mostra a tabela
     st.subheader("Tabela de Desempenho")
@@ -142,6 +154,18 @@ duplas = duplas[~duplas.index.str.contains("Outro")]
 duplas = duplas.reset_index()
 
 with tab2:
+
+    st.markdown(
+        """
+        <style>
+        body {
+            background-color: white;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    
     # Título do app
     st.title("Análise de Desempenho das Duplas")
     
@@ -150,21 +174,21 @@ with tab2:
     fig_vitorias = px.bar(duplas.reset_index(), x="duplas", y="vitórias", title="Vitórias por Dupla",
                           labels={"vitórias": "Vitórias", "duplas": "Duplas"},
                           color_discrete_sequence=["red"])
-    st.plotly_chart(fig_vitorias)
+    st.plotly_chart(fig_vitorias, use_container_width=True, config={"staticPlot": True})
 
     # Gráfico de barras azuis (derrotas)
     st.subheader("Gráfico de Derrotas")
     fig_derrotas = px.bar(duplas.reset_index(), x="duplas", y="derrotas", title="Derrotas por Dupla",
                           labels={"derrotas": "Derrotas", "duplas": "Duplas"},
                           color_discrete_sequence=["blue"])
-    st.plotly_chart(fig_derrotas)
+    st.plotly_chart(fig_derrotas, use_container_width=True, config={"staticPlot": True})
 
     # Gráfico de linha (aproveitamento)
     st.subheader("Gráfico de Aproveitamento")
     fig_aproveitamento = px.line(duplas.reset_index(), x="duplas", y="aproveitamento", title="Aproveitamento por Dupla",
                                  labels={"aproveitamento": "Aproveitamento (%)", "duplas": "Duplas"},
                                  markers=True)
-    st.plotly_chart(fig_aproveitamento)
+    st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
     # Mostra a tabela
     st.subheader("Tabela de Desempenho")
