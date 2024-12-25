@@ -89,16 +89,9 @@ def exibir_graficos(df, eixo_x, titulo):
 
 
 # Simulação de dados para exemplo
-data = {
-    "winner1": ["Benchi", "Gustavo", "Marcelo", "Diego", "Renato"],
-    "winner2": ["Marcelo", "Diego", "Renato", "Gustavo", "Benchi"],
-    "loser1": ["Diego", "Renato", "Gustavo", "Marcelo", "JC"],
-    "loser2": ["JC", "Marcelo", "Diego", "Benchi", "Gustavo"],
-    "date": [
-        (datetime.now() - timedelta(days=i)).date() for i in range(10, 15)
-    ]
-}
-df = pd.DataFrame(data).set_index("date")
+pages = get_pages()
+data = [extrair_dados(page) for page in pages]
+df = pd.DataFrame(data, columns=["winner1", "winner2", "loser1", "loser2", "date"]).set_index("date")
 
 # Ordenar vencedores e perdedores
 for i in range(df.shape[0]):
