@@ -63,6 +63,22 @@ for i in range(df.shape[0]):
     df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
+
+# Configurar fundo branco dentro das abas
+st.markdown(
+    """
+    <style>
+    /* Define o fundo branco apenas dentro das abas */
+    div[data-testid="stVerticalBlock"] {
+        background-color: white;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Abas
 tab1, tab2 = st.tabs(["Jogadores", "Duplas"])
 
@@ -86,21 +102,10 @@ jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
 jogadores = jogadores.reset_index()
-
+jogadores = jogadores.sort_values(by='aproveitamento', ascending=False)
 
 with tab1:
-
-    st.markdown(
-        """
-        <style>
-        body {
-            background-color: white;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    
+   
     # Título do app
     st.title("Análise de Desempenho dos Jogadores")
     
@@ -152,19 +157,9 @@ duplas['derrotas'] = duplas['derrotas'].astype(int)
 duplas = duplas.set_index('duplas')
 duplas = duplas[~duplas.index.str.contains("Outro")]
 duplas = duplas.reset_index()
+duplas = duplas.sort_values(by='aproveitamento', ascending=False)
 
 with tab2:
-
-    st.markdown(
-        """
-        <style>
-        body {
-            background-color: white;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
     
     # Título do app
     st.title("Análise de Desempenho das Duplas")
