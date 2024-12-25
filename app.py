@@ -101,8 +101,9 @@ data = {
 df = pd.DataFrame(data).set_index("date")
 
 # Ordenar vencedores e perdedores
-df[["winner1", "winner2"]] = df[["winner1", "winner2"]].apply(lambda x: sorted(x), axis=1)
-df[["loser1", "loser2"]] = df[["loser1", "loser2"]].apply(lambda x: sorted(x), axis=1)
+for i in range(df.shape[0]):
+    df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
+    df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 # Interface Streamlit
 tab1, tab2, tab3 = st.tabs(["Jogadores", "Duplas", "Jogos"])
