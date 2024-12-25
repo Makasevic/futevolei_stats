@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 
 
@@ -16,34 +16,22 @@ headers = {
 
 
 # Funções auxiliares
-def extrair_dados(page_data):
-    """Extrai vencedores, perdedores e a data de submissão de uma página."""
-    def extrair_multiselect(prop):
-        return [item['name'] for item in prop.get('multi_select', [])] if prop and prop.get('type') == 'multi_select' else []
+def filtrar_por_periodo(df, periodo):
+    """Filtra o DataFrame de acordo com o período selecionado."""
+    if periodo == "1 semana":
+        data_inicio = datetime.now() - timedelta(weeks=1)
+    elif periodo == "1 mês":
+        data_inicio = datetime.now() - timedelta(weeks=4)
+    elif periodo == "3 meses":
+        data_inicio = datetime.now() - timedelta(weeks=12)
+    elif periodo == "6 meses":
+        data_inicio = datetime.now() - timedelta(weeks=26)
+    elif periodo == "1 ano":
+        data_inicio = datetime.now() - timedelta(weeks=52)
+    else:  # "Todos os dados"
+        return df
 
-    winners = extrair_multiselect(page_data['properties'].get('Dupla 1'))
-    losers = extrair_multiselect(page_data['properties'].get('Dupla 2'))
-    submission_date = page_data['properties'].get('Submission time', {}).get('created_time')
-    submission_date = datetime.strptime(submission_date, "%Y-%m-%dT%H:%M:%S.%fZ").date() if submission_date else None
-
-    return winners + losers + [submission_date]
-
-
-def get_pages():
-    """Consulta a API do Notion para obter todas as páginas do banco de dados."""
-    url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
-    payload = {"page_size": 100}
-    results = []
-
-    while True:
-        response = requests.post(url, json=payload, headers=headers)
-        data = response.json()
-        results.extend(data["results"])
-        if not data.get("has_more"):
-            break
-        payload["start_cursor"] = data["next_cursor"]
-
-    return results
+    return df[df.index >= data_inicio.date()]
 
 
 def preparar_dados_individuais(df):
@@ -61,7 +49,7 @@ def preparar_dados_individuais(df):
     jogadores["vitórias"] = jogadores["vitórias"].astype(int)
     jogadores["derrotas"] = jogadores["derrotas"].astype(int)
 
-    return jogadores[~jogadores["jogadores"].str.contains("Outro")]
+    return jogadores
 
 
 def preparar_dados_duplas(df):
@@ -79,82 +67,7 @@ def preparar_dados_duplas(df):
     duplas["vitórias"] = duplas["vitórias"].astype(int)
     duplas["derrotas"] = duplas["derrotas"].astype(int)
 
-    return duplas[~duplas["duplas"].str.contains("Outro")]
-
-
-def preparar_dados_confrontos_jogadores(df):
-    # Criar uma lista única de jogadores
-    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
-    jogadores = sorted(set(jogadores))
-    
-    # Criar um DataFrame de saldo de vitórias
-    saldos = pd.DataFrame(0, index=jogadores, columns=jogadores)
-    
-    # Iterar pelas partidas para calcular o saldo de vitórias
-    for _, row in df.iterrows():
-        winners = [row["winner1"], row["winner2"]]
-        losers = [row["loser1"], row["loser2"]]
-    
-        for winner in winners:
-            for loser in losers:
-                saldos.at[winner, loser] += 1  # Vitória do jogador vencedor contra o perdedor
-                saldos.at[loser, winner] -= 1  # Derrota do perdedor contra o vencedor
-    
-    # Resetar o índice para visualizar o saldo como um DataFrame plano
-    saldo_final = saldos.reset_index()
-    saldo_final.rename(columns={"index": "Jogador"}, inplace=True)
-    saldo_final = saldo_final.set_index('Jogador')
-    max_val = saldo_final.max().max()
-    min_val = saldo_final.min().min()
-    saldo_final = style_dataframe(saldo_final)
-    return saldo_final
-
-
-def preparar_dados_controntos_duplas(df):
-    # Criar as combinações de duplas
-    df["dupla_winner"] = df.apply(lambda row: " e ".join(sorted([row["winner1"], row["winner2"]])), axis=1)
-    df["dupla_loser"] = df.apply(lambda row: " e ".join(sorted([row["loser1"], row["loser2"]])), axis=1)
-    
-    # Criar uma lista única de duplas
-    duplas = sorted(set(df["dupla_winner"].tolist() + df["dupla_loser"].tolist()))
-    
-    # Criar um DataFrame de saldo de vitórias para duplas
-    saldos_duplas = pd.DataFrame(0, index=duplas, columns=duplas)
-    
-    # Iterar pelas partidas para calcular o saldo de vitórias para duplas
-    for _, row in df.iterrows():
-        winner_dupla = row["dupla_winner"]
-        loser_dupla = row["dupla_loser"]
-    
-        saldos_duplas.at[winner_dupla, loser_dupla] += 1  # Vitória da dupla vencedora contra a perdedora
-        saldos_duplas.at[loser_dupla, winner_dupla] -= 1  # Derrota da dupla perdedora contra a vencedora
-    
-    # Resetar o índice para visualizar o saldo como um DataFrame plano
-    saldo_final_duplas = saldos_duplas.reset_index()
-    saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
-    saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
-    max_val = saldo_final_duplas.max().max()
-    min_val = saldo_final_duplas.min().min()
-    saldo_final_duplas = style_dataframe(saldo_final_duplas)
-    return saldo_final_duplas
-
-
-def filtrar_por_periodo(df, periodo):
-    """Filtra o DataFrame de acordo com o período selecionado."""
-    if periodo == "1 semana":
-        data_inicio = datetime.now() - timedelta(weeks=1)
-    elif periodo == "1 mês":
-        data_inicio = datetime.now() - timedelta(weeks=4)
-    elif periodo == "3 meses":
-        data_inicio = datetime.now() - timedelta(weeks=12)
-    elif periodo == "6 meses":
-        data_inicio = datetime.now() - timedelta(weeks=26)
-    elif periodo == "1 ano":
-        data_inicio = datetime.now() - timedelta(weeks=52)
-    else:  # "Todos os dados"
-        return df
-
-    return df[df.index >= data_inicio.date()]
+    return duplas
 
 
 def exibir_graficos(df, eixo_x, titulo):
@@ -175,35 +88,17 @@ def exibir_graficos(df, eixo_x, titulo):
     st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
 
-def background_gradient(val, max_val, min_val):
-    if val == 0:
-        # Fundo preto para valores iguais a 0
-        return "background-color: black; color: white;"
-    elif val > 0:
-        # Azul para valores positivos
-        blue_intensity = min(255, int(255 * (val / max_val)))
-        return f"background-color: rgba(0, 0, {blue_intensity}, 0.5);"
-    elif val < 0:
-        # Vermelho para valores negativos
-        red_intensity = min(255, int(255 * (abs(val) / abs(min_val))))
-        return f"background-color: rgba({red_intensity}, 0, 0, 0.5);"
-    return "background-color: none;"
-
-
-def style_dataframe(df):
-    max_val = df.max().max()
-    min_val = df.min().min()
-
-    def style_cell(val):
-        return background_gradient(val, max_val, min_val)
-
-    return df.style.applymap(style_cell)
-
-        
-# Obtenção e preparação dos dados
-pages = get_pages()
-data = [extrair_dados(page) for page in pages]
-df = pd.DataFrame(data, columns=["winner1", "winner2", "loser1", "loser2", "date"]).set_index("date")
+# Simulação de dados para exemplo
+data = {
+    "winner1": ["Benchi", "Gustavo", "Marcelo", "Diego", "Renato"],
+    "winner2": ["Marcelo", "Diego", "Renato", "Gustavo", "Benchi"],
+    "loser1": ["Diego", "Renato", "Gustavo", "Marcelo", "JC"],
+    "loser2": ["JC", "Marcelo", "Diego", "Benchi", "Gustavo"],
+    "date": [
+        (datetime.now() - timedelta(days=i)).date() for i in range(10, 15)
+    ]
+}
+df = pd.DataFrame(data).set_index("date")
 
 # Ordenar vencedores e perdedores
 df[["winner1", "winner2"]] = df[["winner1", "winner2"]].apply(lambda x: sorted(x), axis=1)
@@ -215,15 +110,6 @@ tab1, tab2, tab3 = st.tabs(["Jogadores", "Duplas", "Jogos"])
 # Adicionar seleção de período em cada aba
 periodos = ["1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
 
-# Ordenar vencedores e perdedores
-for i in range(df.shape[0]):
-    df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
-    df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
-
-jogadores = preparar_dados_individuais(df)
-duplas = preparar_dados_duplas(df)
-
-
 with tab1:
     st.title("Análise de Desempenho dos Jogadores")
     periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
@@ -232,7 +118,6 @@ with tab1:
     jogadores = preparar_dados_individuais(df_filtrado)
     exibir_graficos(jogadores, "jogadores", "Jogador")
     st.dataframe(jogadores.set_index("jogadores"))
-    st.dataframe(preparar_dados_confrontos_jogadores(df_filtrado), use_container_width=True)
 
 with tab2:
     st.title("Análise de Desempenho das Duplas")
@@ -242,7 +127,6 @@ with tab2:
     duplas = preparar_dados_duplas(df_filtrado)
     exibir_graficos(duplas, "duplas", "Dupla")
     st.dataframe(duplas.set_index("duplas"))
-    st.dataframe(preparar_dados_controntos_duplas(df_filtrado), use_container_width=True)
 
 with tab3:
     st.title("Jogos Registrados")
