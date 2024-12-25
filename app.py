@@ -87,7 +87,6 @@ jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
 jogadores = jogadores.reset_index()
-jogadores = jogadores.sort_values(by='aproveitamento', ascending=False)
 
 with tab1:
    
@@ -142,7 +141,6 @@ duplas['derrotas'] = duplas['derrotas'].astype(int)
 duplas = duplas.set_index('duplas')
 duplas = duplas[~duplas.index.str.contains("Outro")]
 duplas = duplas.reset_index()
-duplas = duplas.sort_values(by='aproveitamento', ascending=False)
 
 with tab2:
     
