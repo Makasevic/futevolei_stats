@@ -116,6 +116,30 @@ def exibir_graficos(df, eixo_x, titulo):
     st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
 
+def background_gradient(val, max_val, min_val):
+    if val == 0:
+        # Fundo preto para valores iguais a 0
+        return "background-color: black; color: white;"
+    elif val > 0:
+        # Azul para valores positivos
+        blue_intensity = min(255, int(255 * (val / max_val)))
+        return f"background-color: rgba(0, 0, {blue_intensity}, 0.5);"
+    elif val < 0:
+        # Vermelho para valores negativos
+        red_intensity = min(255, int(255 * (abs(val) / abs(min_val))))
+        return f"background-color: rgba({red_intensity}, 0, 0, 0.5);"
+    return "background-color: none;"
+
+
+def style_dataframe(df):
+    max_val = df.max().max()
+    min_val = df.min().min()
+
+    def style_cell(val):
+        return background_gradient(val, max_val, min_val)
+
+    return df.style.applymap(style_cell)
+
 # Simulação de dados para exemplo
 pages = get_pages()
 data = [extrair_dados(page) for page in pages]
@@ -140,6 +164,7 @@ with tab1:
     jogadores = preparar_dados_individuais(df_filtrado)
     exibir_graficos(jogadores, "jogadores", "Jogador")
     st.dataframe(jogadores.set_index("jogadores"))
+    st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True)
 
 with tab2:
     st.title("Análise de Desempenho das Duplas")
@@ -149,10 +174,11 @@ with tab2:
     duplas = preparar_dados_duplas(df_filtrado)
     exibir_graficos(duplas, "duplas", "Dupla")
     st.dataframe(duplas.set_index("duplas"))
+    st.dataframe(preparar_dados_controntos_duplas(df), use_container_width=True)
 
 with tab3:
     st.title("Jogos Registrados")
     periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
     df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
 
-    st.dataframe(df_filtrado)
+    st.dataframe(df.drop(['dupla_winner','dupla_loser'], axis=1))
