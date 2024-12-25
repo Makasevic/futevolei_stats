@@ -158,10 +158,15 @@ def exibir_graficos(df, eixo_x, titulo):
 
 
 def background_gradient(val, max_val, min_val):
-    if val > 0:
+    if val == 0:
+        # Fundo preto para valores iguais a 0
+        return "background-color: black; color: white;"
+    elif val > 0:
+        # Azul para valores positivos
         blue_intensity = min(255, int(255 * (val / max_val)))
         return f"background-color: rgba(0, 0, {blue_intensity}, 0.5);"
     elif val < 0:
+        # Vermelho para valores negativos
         red_intensity = min(255, int(255 * (abs(val) / abs(min_val))))
         return f"background-color: rgba({red_intensity}, 0, 0, 0.5);"
     return "background-color: none;"
