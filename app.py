@@ -104,7 +104,7 @@ def preparar_dados_confrontos_jogadores(df):
     saldo_final = saldos.reset_index()
     saldo_final.rename(columns={"index": "Jogador"}, inplace=True)
     saldo_final = saldo_final.set_index('Jogador')
-    return saldo_final
+    return saldo_final.style.background_gradient(cmap="RdBu")
 
 
 def preparar_dados_controntos_duplas(df):
@@ -130,7 +130,7 @@ def preparar_dados_controntos_duplas(df):
     saldo_final_duplas = saldos_duplas.reset_index()
     saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
     saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
-    return saldo_final_duplas
+    return saldo_final_duplas.style.background_gradient(cmap="RdBu")
 
 
 def exibir_graficos(df, eixo_x, titulo):
