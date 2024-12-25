@@ -63,6 +63,8 @@ for i in range(df.shape[0]):
     df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
+# Abas
+tab1, tab2 = st.tabs(["Jogadores", "Duplas"])
 
 jogador_w = pd.DataFrame(df.iloc[:, 0:2].values.reshape(-1))
 jogador_w = jogador_w.value_counts()
@@ -83,14 +85,9 @@ jogadores['vitórias'] = jogadores['vitórias'].astype(int)
 jogadores['derrotas'] = jogadores['derrotas'].astype(int)
 jogadores = jogadores.set_index('jogadores')
 jogadores = jogadores[~jogadores.index.str.contains("Outro")]
-# jogadores.sort_values('aproveitamento', ascending=False)
-jogadores = jogadores.reset_index()
 
 # Título do app
 st.title("Análise de Desempenho dos Jogadores")
-
-# Abas
-tab1, tab2 = st.tabs(["Tabela 1", "Tabela 2"])
 
 with tab1:
     # Gráfico de barras vermelhas (vitórias)
@@ -140,7 +137,6 @@ duplas['vitórias'] = duplas['vitórias'].astype(int)
 duplas['derrotas'] = duplas['derrotas'].astype(int)
 duplas = duplas.set_index('duplas')
 duplas = duplas[~duplas.index.str.contains("Outro")]
-duplas.sort_values('aproveitamento', ascending=False)
 
 
 with tab2:
@@ -167,4 +163,4 @@ with tab2:
 
     # Mostra a tabela
     st.subheader("Tabela de Desempenho")
-    st.dataframe(duplas.reset_index())
+    st.dataframe(duplas)
