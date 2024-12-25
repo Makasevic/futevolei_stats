@@ -129,7 +129,7 @@ def preparar_dados_controntos_duplas(df):
     # Resetar o índice para visualizar o saldo como um DataFrame plano
     saldo_final_duplas = saldos_duplas.reset_index()
     saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
-    saldo_final = saldo_final.set_index('Dupla')
+    saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
     return saldo_final_duplas
 
 
