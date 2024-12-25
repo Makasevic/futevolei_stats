@@ -103,6 +103,7 @@ def preparar_dados_confrontos_jogadores(df):
     # Resetar o índice para visualizar o saldo como um DataFrame plano
     saldo_final = saldos.reset_index()
     saldo_final.rename(columns={"index": "Jogador"}, inplace=True)
+    saldo_final = saldo_final.set_index('Jogador')
     return saldo_final
 
 
@@ -128,6 +129,7 @@ def preparar_dados_controntos_duplas(df):
     # Resetar o índice para visualizar o saldo como um DataFrame plano
     saldo_final_duplas = saldos_duplas.reset_index()
     saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
+    saldo_final = saldo_final.set_index('Dupla')
     return saldo_final_duplas
 
 
