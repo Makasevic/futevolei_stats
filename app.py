@@ -97,6 +97,62 @@ def preparar_dados_duplas(df):
 
     return duplas
 
+def preparar_dados_confrontos_jogadores(df):
+    # Criar uma lista única de jogadores
+    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    jogadores = sorted(set(jogadores))
+    
+    # Criar um DataFrame de saldo de vitórias
+    saldos = pd.DataFrame(0, index=jogadores, columns=jogadores)
+    
+    # Iterar pelas partidas para calcular o saldo de vitórias
+    for _, row in df.iterrows():
+        winners = [row["winner1"], row["winner2"]]
+        losers = [row["loser1"], row["loser2"]]
+    
+        for winner in winners:
+            for loser in losers:
+                saldos.at[winner, loser] += 1  # Vitória do jogador vencedor contra o perdedor
+                saldos.at[loser, winner] -= 1  # Derrota do perdedor contra o vencedor
+    
+    # Resetar o índice para visualizar o saldo como um DataFrame plano
+    saldo_final = saldos.reset_index()
+    saldo_final.rename(columns={"index": "Jogador"}, inplace=True)
+    saldo_final = saldo_final.set_index('Jogador')
+    max_val = saldo_final.max().max()
+    min_val = saldo_final.min().min()
+    saldo_final = style_dataframe(saldo_final)
+    return saldo_final
+
+
+def preparar_dados_controntos_duplas(df):
+    # Criar as combinações de duplas
+    df["dupla_winner"] = df.apply(lambda row: " e ".join(sorted([row["winner1"], row["winner2"]])), axis=1)
+    df["dupla_loser"] = df.apply(lambda row: " e ".join(sorted([row["loser1"], row["loser2"]])), axis=1)
+    
+    # Criar uma lista única de duplas
+    duplas = sorted(set(df["dupla_winner"].tolist() + df["dupla_loser"].tolist()))
+    
+    # Criar um DataFrame de saldo de vitórias para duplas
+    saldos_duplas = pd.DataFrame(0, index=duplas, columns=duplas)
+    
+    # Iterar pelas partidas para calcular o saldo de vitórias para duplas
+    for _, row in df.iterrows():
+        winner_dupla = row["dupla_winner"]
+        loser_dupla = row["dupla_loser"]
+    
+        saldos_duplas.at[winner_dupla, loser_dupla] += 1  # Vitória da dupla vencedora contra a perdedora
+        saldos_duplas.at[loser_dupla, winner_dupla] -= 1  # Derrota da dupla perdedora contra a vencedora
+    
+    # Resetar o índice para visualizar o saldo como um DataFrame plano
+    saldo_final_duplas = saldos_duplas.reset_index()
+    saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
+    saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
+    max_val = saldo_final_duplas.max().max()
+    min_val = saldo_final_duplas.min().min()
+    saldo_final_duplas = style_dataframe(saldo_final_duplas)
+    return saldo_final_duplas
+
 
 def exibir_graficos(df, eixo_x, titulo):
     """Exibe gráficos de vitórias, derrotas e aproveitamento."""
