@@ -106,7 +106,7 @@ def preparar_dados_confrontos_jogadores(df):
     saldo_final = saldo_final.set_index('Jogador')
     max_val = saldo_final.max().max()
     min_val = saldo_final.min().min()
-    saldo_final = saldo_final.style.applymap(lambda x: background_gradient(x, max_val, min_val))
+    saldo_final = style_dataframe(saldo_final)
     return saldo_final
 
 
@@ -135,7 +135,7 @@ def preparar_dados_controntos_duplas(df):
     saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
     max_val = saldo_final_duplas.max().max()
     min_val = saldo_final_duplas.min().min()
-    saldo_final_duplas = saldo_final_duplas.style.applymap(lambda x: background_gradient(x, max_val, min_val))
+    saldo_final_duplas = style_dataframe(saldo_final_duplas)
     return saldo_final_duplas
 
 
@@ -157,22 +157,31 @@ def exibir_graficos(df, eixo_x, titulo):
     st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
 
+
 def background_gradient(val, max_val, min_val):
-    """
-    Retorna o estilo para aplicar cores baseado no valor:
-    - Azul para valores positivos
-    - Vermelho para valores negativos
-    """
     if val > 0:
-        # Azul para valores positivos
-        blue_intensity = min(255, int(255 * (val / max_val)))  # Normalizar para 255
+        blue_intensity = min(255, int(255 * (val / max_val)))
         return f"background-color: rgba(0, 0, {blue_intensity}, 0.5);"
     elif val < 0:
-        # Vermelho para valores negativos
-        red_intensity = min(255, int(255 * (abs(val) / abs(min_val))))  # Normalizar para 255
+        red_intensity = min(255, int(255 * (abs(val) / abs(min_val))))
         return f"background-color: rgba({red_intensity}, 0, 0, 0.5);"
-    else:
-        return "background-color: none;"
+    return "background-color: none;"
+
+
+def style_dataframe(df):
+    max_val = df.max().max()
+    min_val = df.min().min()
+
+    def style_row(row):
+        return [background_gradient(val, max_val, min_val) if isinstance(val, (int, float)) else "" for val in row]
+
+    # Aplicar o estilo a todas as linhas
+    styled_df = df.style.apply(style_row, axis=1)
+
+    # Forçar a aplicação no índice (primeira linha incluída)
+    styled_df.set_properties(subset=df.index, **{"background-color": "none"})
+
+    return styled_df
 
         
 # Obtenção e preparação dos dados
