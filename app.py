@@ -241,7 +241,6 @@ with tab2:
 
     duplas = preparar_dados_duplas(df_filtrado)
     exibir_graficos(duplas, "duplas", "Dupla")
-    st.subheader("Lista de Jogos Filtrados")
     st.subheader("Estatíticas das duplas")
     st.dataframe(duplas.set_index("duplas"))
     st.subheader("Estatíticas dos confrontos")
