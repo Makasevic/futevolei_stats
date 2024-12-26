@@ -1,4 +1,20 @@
 import streamlit as st
+
+# 1. Configuração do tema e da página
+st.set_page_config(
+    page_title="Análise em Dark Mode",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    theme={
+        "base": "dark",
+        "primaryColor": "#FF4B4B",
+        "backgroundColor": "#0E1117",
+        "secondaryBackgroundColor": "#262730",
+        "textColor": "#FAFAFA",
+        "font": "sans serif"
+    }
+)
+
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
