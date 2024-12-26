@@ -251,5 +251,4 @@ with tab3:
     st.title("Jogos Registrados")
     periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
     df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
-
-    st.dataframe(df.drop(['dupla_winner','dupla_loser'], axis=1))
+    st.dataframe(df.drop(['dupla_winner','dupla_loser'], axis=1).sort_index(ascending=False))
