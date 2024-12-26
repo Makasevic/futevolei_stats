@@ -231,6 +231,7 @@ with tab1:
     st.subheader("Estatíticas dos jogadores")
     st.dataframe(jogadores.set_index("jogadores"))
     st.subheader("Estatíticas dos confrontos")
+    st.write("Esta tabela mostra o saldo de confrontos do jogador (na linha) em relação a cada adversário (na coluna).")
     st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True, key="duplas")
 
 with tab2:
@@ -244,6 +245,7 @@ with tab2:
     st.subheader("Estatíticas das duplas")
     st.dataframe(duplas.set_index("duplas"))
     st.subheader("Estatíticas dos confrontos")
+    st.write("Esta tabela mostra o saldo de confrontos da dupla (na linha) em relação a cada dupla adversária (na coluna).")
     st.dataframe(preparar_dados_controntos_duplas(df), use_container_width=True)
 
 with tab3:
