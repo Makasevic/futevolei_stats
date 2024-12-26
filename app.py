@@ -46,7 +46,10 @@ def get_pages():
 # Funções auxiliares
 def filtrar_por_periodo(df, periodo):
     """Filtra o DataFrame de acordo com o período selecionado."""
-    if periodo == "1 semana":
+
+    if periodo == "Último dia":
+        data_inicio = df.index.max()
+    elif periodo == "1 semana":
         data_inicio = datetime.now() - timedelta(weeks=1)
     elif periodo == "1 mês":
         data_inicio = datetime.now() - timedelta(weeks=4)
@@ -76,6 +79,7 @@ def preparar_dados_individuais(df):
     jogadores.columns = ["jogadores", "vitórias", "derrotas", "aproveitamento"]
     jogadores["vitórias"] = jogadores["vitórias"].astype(int)
     jogadores["derrotas"] = jogadores["derrotas"].astype(int)
+    jogadores = jogadores.loc[~jogadores["jogadores"].astype(str).str.contains("Outro"), :]
 
     return jogadores
 
@@ -94,7 +98,8 @@ def preparar_dados_duplas(df):
     duplas.columns = ["duplas", "vitórias", "derrotas", "aproveitamento"]
     duplas["vitórias"] = duplas["vitórias"].astype(int)
     duplas["derrotas"] = duplas["derrotas"].astype(int)
-
+    duplas = duplas.loc[~duplas["duplas"].astype(str).str.contains("Outro"), :]
+    
     return duplas
 
 def preparar_dados_confrontos_jogadores(df):
@@ -119,6 +124,8 @@ def preparar_dados_confrontos_jogadores(df):
     saldo_final = saldos.reset_index()
     saldo_final.rename(columns={"index": "Jogador"}, inplace=True)
     saldo_final = saldo_final.set_index('Jogador')
+    saldo_final = saldo_final.loc[~saldo_final.index.astype(str).str.contains("Outro"), 
+                                  ~saldo_final.columns.astype(str).str.contains("Outro")]
     max_val = saldo_final.max().max()
     min_val = saldo_final.min().min()
     saldo_final = style_dataframe(saldo_final)
@@ -148,6 +155,8 @@ def preparar_dados_controntos_duplas(df):
     saldo_final_duplas = saldos_duplas.reset_index()
     saldo_final_duplas.rename(columns={"index": "Dupla"}, inplace=True)
     saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
+    saldo_final_duplas = saldo_final_duplas.loc[~saldo_final_duplas.index.astype(str).str.contains("Outro"), 
+                                                ~saldo_final_duplas.columns.astype(str).str.contains("Outro")]
     max_val = saldo_final_duplas.max().max()
     min_val = saldo_final_duplas.min().min()
     saldo_final_duplas = style_dataframe(saldo_final_duplas)
@@ -210,7 +219,7 @@ for i in range(df.shape[0]):
 tab1, tab2, tab3 = st.tabs(["Jogadores", "Duplas", "Jogos"])
 
 # Adicionar seleção de período em cada aba
-periodos = ["1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
+periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
 
 with tab1:
     st.title("Análise de Desempenho dos Jogadores")
