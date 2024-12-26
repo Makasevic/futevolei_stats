@@ -158,12 +158,12 @@ def exibir_graficos(df, eixo_x, titulo):
     """Exibe gráficos de vitórias, derrotas e aproveitamento."""
     st.subheader("Gráfico de Vitórias")
     fig_vitorias = px.bar(df, x=eixo_x, y="vitórias", title=f"Vitórias por {titulo}",
-                          color_discrete_sequence=["red"])
+                          color_discrete_sequence=["steelblue"])
     st.plotly_chart(fig_vitorias, use_container_width=True, config={"staticPlot": True})
 
     st.subheader("Gráfico de Derrotas")
     fig_derrotas = px.bar(df, x=eixo_x, y="derrotas", title=f"Derrotas por {titulo}",
-                          color_discrete_sequence=["blue"])
+                          color_discrete_sequence=["indianred"])
     st.plotly_chart(fig_derrotas, use_container_width=True, config={"staticPlot": True})
 
     st.subheader("Gráfico de Aproveitamento")
