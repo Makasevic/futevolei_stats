@@ -48,7 +48,7 @@ def filtrar_por_periodo(df, periodo):
     """Filtra o DataFrame de acordo com o período selecionado."""
 
     if periodo == "Último dia":
-        data_inicio = df.index.max()
+        data_inicio = pd.to_datetime(df.index.max())
     elif periodo == "1 semana":
         data_inicio = datetime.now() - timedelta(weeks=1)
     elif periodo == "1 mês":
