@@ -177,8 +177,8 @@ def exibir_graficos(df, eixo_x, titulo):
     st.plotly_chart(fig_derrotas, use_container_width=True, config={"staticPlot": True})
 
     st.subheader("Gráfico de Aproveitamento")
-    df["aproveitamento"] = df["aproveitamento"].round(0).astype(str) + "%"
-    fig_aproveitamento = px.line(df.round(0).astype(int), x=eixo_x, y="aproveitamento", title=f"Aproveitamento por {titulo}", markers=True, text="aproveitamento")
+    df["aproveitamento"] = df["aproveitamento"].round(0).astype(int) .astype(str) + "%"
+    fig_aproveitamento = px.line(df, x=eixo_x, y="aproveitamento", title=f"Aproveitamento por {titulo}", markers=True, text="aproveitamento")
     fig_aproveitamento.update_traces(textposition="top center", textfont_size=12)
     st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": False})
 
