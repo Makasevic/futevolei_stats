@@ -259,6 +259,7 @@ with tab4:
 
     # Lista única de jogadores
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    jogadores = [x for x in jogadores if "Outro" not in x]
     jogadores = sorted(set(jogadores))
 
     # Criar subplots com uma linha para cada jogador
