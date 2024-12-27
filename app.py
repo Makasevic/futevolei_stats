@@ -296,7 +296,15 @@ with tab4:
         )
 
         # Adicionar o nome do jogador no eixo y
-        fig.update_yaxes(title_text=jogador, row=idx, col=1)
+        fig.update_yaxes(
+            title_text=jogador,
+            row=idx,
+            col=1,
+            showline=True,  # Habilitar linha ao redor do eixo
+            linecolor="white",  # Cor da linha
+            linewidth=2,  # Largura da linha
+            mirror=True  # Espelhar a linha ao redor do subplot
+        )
 
     # Ajustar layout para remover título do eixo x
     fig.update_layout(
@@ -304,9 +312,15 @@ with tab4:
         showlegend=False,  # Não mostrar legenda
         title=None,
         margin=dict(l=40, r=20, t=20, b=20),
+        plot_bgcolor="rgba(0,0,0,0)",  # Fundo transparente para destacar o frame
     )
-    fig.update_xaxes(title_text="")  # Remove o título do eixo x
+    fig.update_xaxes(
+        title_text="",
+        showline=True,  # Habilitar linha ao redor do eixo x
+        linecolor="white",  # Cor da linha
+        linewidth=2,  # Largura da linha
+        mirror=True  # Espelhar a linha ao redor do subplot
+    )
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
-
