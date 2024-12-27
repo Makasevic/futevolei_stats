@@ -252,3 +252,60 @@ with tab3:
     periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
     df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
     st.dataframe(df_filtrado.drop(['dupla_winner','dupla_loser'], axis=1).sort_index(ascending=False))
+
+with tab4:
+    st.title("Análises Avançadas de Desempenho")
+    
+    # Estatísticas gerais
+    st.subheader("Resumo Estatístico")
+    st.write("Esta seção fornece estatísticas descritivas sobre vitórias, derrotas e aproveitamento.")
+    
+    # Dados agregados por período
+    df_estatisticas = df.groupby(df.index.to_period("M")).size().reset_index(name="Jogos por Mês")
+    st.write(f"Jogos registrados no período: {df.shape[0]}")
+    st.dataframe(df_estatisticas.rename(columns={"Jogos por Mês": "Total de Jogos"}), use_container_width=True)
+    
+    # Gráfico de séries temporais
+    st.subheader("Desempenho ao Longo do Tempo")
+    jogos_por_data = df.groupby(df.index).size().reset_index(name="Jogos Diários")
+    fig_jogos = px.line(
+        jogos_por_data,
+        x="date",
+        y="Jogos Diários",
+        title="Evolução do Número de Jogos ao Longo do Tempo",
+        labels={"date": "Data", "Jogos Diários": "Quantidade de Jogos"},
+        markers=True,
+    )
+    st.plotly_chart(fig_jogos, use_container_width=True)
+    
+    # Análise de correlação
+    st.subheader("Correlação entre Jogadores")
+    st.write(
+        "A matriz de correlação abaixo mostra a relação entre o saldo de confrontos entre jogadores. "
+        "Cores mais fortes indicam maior correlação."
+    )
+    saldos = preparar_dados_confrontos_jogadores(df).corr()
+    fig_corr = px.imshow(
+        saldos,
+        color_continuous_scale="RdBu",
+        title="Correlação entre Jogadores",
+        labels={"color": "Correlação"},
+    )
+    st.plotly_chart(fig_corr, use_container_width=True)
+    
+    # Análise de dominância
+    st.subheader("Jogadores Mais Dominantes")
+    st.write("Os gráficos abaixo destacam os jogadores mais dominantes com base no saldo de confrontos.")
+    
+    saldo_geral = preparar_dados_confrontos_jogadores(df).sum(axis=1).reset_index()
+    saldo_geral.columns = ["Jogador", "Saldo Total"]
+    fig_saldo = px.bar(
+        saldo_geral.sort_values(by="Saldo Total", ascending=False),
+        x="Jogador",
+        y="Saldo Total",
+        title="Saldo Total de Confrontos por Jogador",
+        labels={"Saldo Total": "Saldo Total"},
+        color="Saldo Total",
+        color_continuous_scale="Blues",
+    )
+    st.plotly_chart(fig_saldo, use_container_width=True)
