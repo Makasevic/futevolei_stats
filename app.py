@@ -177,9 +177,9 @@ def exibir_graficos(df, eixo_x, titulo):
     st.plotly_chart(fig_derrotas, use_container_width=True, config={"staticPlot": True})
 
     st.subheader("Gráfico de Aproveitamento")
-    fig_aproveitamento = px.line(df, x=eixo_x, y="aproveitamento", title=f"Aproveitamento por {titulo}",
+    fig_aproveitamento = px.line(df.round(0), x=eixo_x, y="aproveitamento", title=f"Aproveitamento por {titulo}",
                                  markers=True)
-    st.plotly_chart(fig_aproveitamento.round(0), use_container_width=True, config={"staticPlot": False})
+    st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": False})
 
 
 def background_gradient(val, max_val, min_val):
