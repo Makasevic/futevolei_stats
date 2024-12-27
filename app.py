@@ -300,6 +300,7 @@ with tab4:
 
     # Ajustar layout
     fig.update_layout(
+        title=None,
         height=150 * len(jogadores),  # Altura total do gráfico
         showlegend=False,  # Não mostrar legenda
         title=None,
