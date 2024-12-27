@@ -265,7 +265,7 @@ with tab4:
     fig = make_subplots(
         rows=len(jogadores),
         cols=1,
-        shared_xaxes=True,  # Compartilhar eixo x
+        shared_xaxes=False,  # Compartilhar eixo x
         vertical_spacing=0.02  # Espaçamento vertical entre os gráficos
     )
 
