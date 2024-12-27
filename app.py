@@ -273,10 +273,10 @@ with tab4:
     for idx, jogador in enumerate(jogadores, start=1):
         # Filtrar os dados do jogador
         vitorias = (df[["winner1", "winner2"]] == jogador).sum(axis=1)
-        vitorias = vitorias.groupby(vitorias.index).sum().cumsum()
+        vitorias = vitorias.groupby(vitorias.index).sum()
         derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1).cumsum()
-        derrotas = derrotas.groupby(derrotas.index).sum().cumsum()
-        jogos_totais = vitorias + derrotas
+        derrotas = derrotas.groupby(derrotas.index).sum()
+        jogos_totais = (vitorias + derrotas).fillna(0)
         aproveitamento = (vitorias / jogos_totais).fillna(0)
 
         # Adicionar o gráfico do jogador aos subplots
