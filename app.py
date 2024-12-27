@@ -255,69 +255,51 @@ with tab3:
     st.dataframe(df_filtrado.drop(['dupla_winner','dupla_loser'], axis=1).sort_index(ascending=False))
 
 with tab4:
-    st.title("Aproveitamento de Jogadores por Dia")
+    st.title("Aproveitamento de Jogadores ao Longo do Tempo")
 
     # Lista única de jogadores
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
     jogadores = sorted(set(jogadores))
 
-    # DataFrame consolidado por dia
-    data_diaria = []
-
-    for jogador in jogadores:
-        # Contar vitórias e derrotas por dia
-        vitorias_por_dia = df[(df["winner1"] == jogador) | (df["winner2"] == jogador)].groupby(df.index).size()
-        derrotas_por_dia = df[(df["loser1"] == jogador) | (df["loser2"] == jogador)].groupby(df.index).size()
-
-        # Consolidar jogos totais e aproveitamento
-        jogos_totais_por_dia = (vitorias_por_dia + derrotas_por_dia).reindex(df.index, fill_value=0)
-        aproveitamento_por_dia = (vitorias_por_dia / jogos_totais_por_dia * 100).fillna(0)
-
-        # Criar DataFrame para armazenar resultados do jogador
-        data_jogador = pd.DataFrame({
-            "date": jogos_totais_por_dia.index,
-            "aproveitamento": aproveitamento_por_dia,
-        }).set_index("date")
-        data_jogador["jogador"] = jogador
-
-        data_diaria.append(data_jogador)
-
-    # Combinar todos os jogadores em um único DataFrame
-    df_aproveitamento = pd.concat(data_diaria).reset_index()
-
-    # Criar subplots
+    # Criar subplots com uma linha para cada jogador
     fig = make_subplots(
         rows=len(jogadores),
         cols=1,
-        shared_xaxes=True,
-        vertical_spacing=0.02,
+        shared_xaxes=True,  # Compartilhar eixo x
+        vertical_spacing=0.02  # Espaçamento vertical entre os gráficos
     )
 
-    # Adicionar os gráficos de cada jogador
+    # Iterar sobre cada jogador e calcular aproveitamento
     for idx, jogador in enumerate(jogadores, start=1):
-        df_jogador = df_aproveitamento[df_aproveitamento["jogador"] == jogador]
+        # Filtrar os dados do jogador
+        vitorias = (df[["winner1", "winner2"]] == jogador).sum(axis=1).cumsum()
+        derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1).cumsum()
+        jogos_totais = vitorias + derrotas
+        aproveitamento = (vitorias / jogos_totais * 100).fillna(0)
 
+        # Adicionar o gráfico do jogador aos subplots
         fig.add_scatter(
-            x=df_jogador["date"],
-            y=df_jogador["aproveitamento"],
+            x=aproveitamento.index,
+            y=aproveitamento,
             mode="lines+markers",
             name=jogador,
             row=idx,
             col=1,
             line=dict(width=1),
-            marker=dict(size=4),
+            marker=dict(size=4)
         )
 
-        # Nome do jogador no eixo y
+        # Adicionar o nome do jogador no eixo y
         fig.update_yaxes(title_text=jogador, row=idx, col=1)
 
     # Ajustar layout
     fig.update_layout(
-        height=150 * len(jogadores),  # Altura total ajustada pelo número de jogadores
-        showlegend=False,
+        height=150 * len(jogadores),  # Altura total do gráfico
+        showlegend=False,  # Não mostrar legenda
+        title=None,
         margin=dict(l=40, r=20, t=20, b=20),
-        xaxis_title="Data",
     )
+    fig.update_xaxes(title_text="Data")  # Nome para o eixo x compartilhado
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
