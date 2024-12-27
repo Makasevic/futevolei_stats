@@ -266,7 +266,7 @@ with tab4:
         rows=len(jogadores),
         cols=1,
         shared_xaxes=True,  # Compartilhar eixo x
-        vertical_spacing=0.001  # Reduzir espaçamento vertical entre os gráficos
+        vertical_spacing=0.02  # Espaçamento vertical entre os gráficos
     )
 
     # Iterar sobre cada jogador e calcular aproveitamento
@@ -298,15 +298,14 @@ with tab4:
         # Adicionar o nome do jogador no eixo y
         fig.update_yaxes(title_text=jogador, row=idx, col=1)
 
-    # Ajustar layout para remover título do eixo x
+    # Ajustar layout
     fig.update_layout(
-        height=120 * len(jogadores),  # Altura total ajustada para reduzir espaço
+        height=150 * len(jogadores),  # Altura total do gráfico
         showlegend=False,  # Não mostrar legenda
         title=None,
         margin=dict(l=40, r=20, t=20, b=20),
     )
-    fig.update_xaxes(title_text=None)  # Remove o título do eixo x
+    fig.update_xaxes(title_text="Data")  # Nome para o eixo x compartilhado
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
-
