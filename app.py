@@ -300,10 +300,9 @@ with tab4:
 
     # Ajustar layout
     fig.update_layout(
-        title=None,
         height=150 * len(jogadores),  # Altura total do gráfico
         showlegend=False,  # Não mostrar legenda
-        title=None,
+        title="",
         margin=dict(l=40, r=20, t=20, b=20),
     )
     fig.update_xaxes(title_text=None)  # Nome para o eixo x compartilhado
