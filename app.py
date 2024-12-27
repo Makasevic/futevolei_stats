@@ -1,4 +1,4 @@
-import streamlit as st
+oluimport streamlit as st
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.express as px
@@ -217,7 +217,7 @@ for i in range(df.shape[0]):
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 # Interface Streamlit
-tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Duplas", "Jogos", "Outro"])
+tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Duplas", "Jogos", "Evolução"])
 
 # Adicionar seleção de período em cada aba
 periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
@@ -266,7 +266,7 @@ with tab4:
         rows=len(jogadores),
         cols=1,
         shared_xaxes=True,  # Compartilhar eixo x
-        vertical_spacing=0.02  # Espaçamento vertical entre os gráficos
+        vertical_spacing=0.005  # Reduzir espaçamento vertical entre os gráficos
     )
 
     # Iterar sobre cada jogador e calcular aproveitamento
@@ -298,14 +298,14 @@ with tab4:
         # Adicionar o nome do jogador no eixo y
         fig.update_yaxes(title_text=jogador, row=idx, col=1)
 
-    # Ajustar layout
+    # Ajustar layout para remover título do eixo x
     fig.update_layout(
-        height=150 * len(jogadores),  # Altura total do gráfico
+        height=120 * len(jogadores),  # Altura total ajustada para reduzir espaço
         showlegend=False,  # Não mostrar legenda
         title=None,
         margin=dict(l=40, r=20, t=20, b=20),
     )
-    fig.update_xaxes(title_text="Data")  # Nome para o eixo x compartilhado
+    fig.update_xaxes(title_text="")  # Remove o título do eixo x
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
