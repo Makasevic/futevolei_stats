@@ -254,58 +254,49 @@ with tab3:
     st.dataframe(df_filtrado.drop(['dupla_winner','dupla_loser'], axis=1).sort_index(ascending=False))
 
 with tab4:
-    st.title("Análises Avançadas de Desempenho")
-    
-    # Estatísticas gerais
-    st.subheader("Resumo Estatístico")
-    st.write("Esta seção fornece estatísticas descritivas sobre vitórias, derrotas e aproveitamento.")
-    
-    # Dados agregados por período
-    df_estatisticas = df.groupby(df.index.to_period("M")).size().reset_index(name="Jogos por Mês")
-    st.write(f"Jogos registrados no período: {df.shape[0]}")
-    st.dataframe(df_estatisticas.rename(columns={"Jogos por Mês": "Total de Jogos"}), use_container_width=True)
-    
-    # Gráfico de séries temporais
-    st.subheader("Desempenho ao Longo do Tempo")
-    jogos_por_data = df.groupby(df.index).size().reset_index(name="Jogos Diários")
-    fig_jogos = px.line(
-        jogos_por_data,
-        x="date",
-        y="Jogos Diários",
-        title="Evolução do Número de Jogos ao Longo do Tempo",
-        labels={"date": "Data", "Jogos Diários": "Quantidade de Jogos"},
-        markers=True,
-    )
-    st.plotly_chart(fig_jogos, use_container_width=True)
-    
-    # Análise de correlação
-    st.subheader("Correlação entre Jogadores")
-    st.write(
-        "A matriz de correlação abaixo mostra a relação entre o saldo de confrontos entre jogadores. "
-        "Cores mais fortes indicam maior correlação."
-    )
-    saldos = preparar_dados_confrontos_jogadores(df).corr()
-    fig_corr = px.imshow(
-        saldos,
-        color_continuous_scale="RdBu",
-        title="Correlação entre Jogadores",
-        labels={"color": "Correlação"},
-    )
-    st.plotly_chart(fig_corr, use_container_width=True)
-    
-    # Análise de dominância
-    st.subheader("Jogadores Mais Dominantes")
-    st.write("Os gráficos abaixo destacam os jogadores mais dominantes com base no saldo de confrontos.")
-    
-    saldo_geral = preparar_dados_confrontos_jogadores(df).sum(axis=1).reset_index()
-    saldo_geral.columns = ["Jogador", "Saldo Total"]
-    fig_saldo = px.bar(
-        saldo_geral.sort_values(by="Saldo Total", ascending=False),
-        x="Jogador",
-        y="Saldo Total",
-        title="Saldo Total de Confrontos por Jogador",
-        labels={"Saldo Total": "Saldo Total"},
-        color="Saldo Total",
-        color_continuous_scale="Blues",
-    )
-    st.plotly_chart(fig_saldo, use_container_width=True)
+    st.title("Aproveitamento de Jogadores ao Longo do Tempo")
+
+    # Preprocessamento para calcular aproveitamento ao longo do tempo
+    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    jogadores = sorted(set(jogadores))  # Lista única de jogadores
+
+    # DataFrame para armazenar os dados de aproveitamento por jogador
+    dados_aproveitamento = []
+
+    # Iterar sobre o DataFrame por data e calcular vitórias e derrotas acumuladas
+    for jogador in jogadores:
+        jogos = []
+        vitorias = []
+        derrotas = []
+
+        for date, row in df.iterrows():
+            # Verifica se o jogador participou como vencedor ou perdedor
+            win_count = sum([row["winner1"] == jogador, row["winner2"] == jogador])
+            loss_count = sum([row["loser1"] == jogador, row["loser2"] == jogador])
+
+            # Adiciona os dados cumulativos
+            jogos.append((date, win_count + loss_count))
+            vitorias.append((date, win_count))
+            derrotas.append((date, loss_count))
+
+        # Transformar em DataFrame para o jogador
+        df_jogador = pd.DataFrame(jogos, columns=["date", "jogos"]).set_index("date")
+        df_jogador["vitorias"] = pd.DataFrame(vitorias, columns=["date", "vitorias"]).set_index("date")
+        df_jogador["derrotas"] = pd.DataFrame(derrotas, columns=["date", "derrotas"]).set_index("date")
+        df_jogador["aproveitamento"] = df_jogador["vitorias"] / df_jogador["jogos"] * 100
+
+        # Armazena os dados para exibição
+        dados_aproveitamento.append((jogador, df_jogador))
+
+    # Criar gráficos individuais para cada jogador
+    for jogador, df_jogador in dados_aproveitamento:
+        st.subheader(f"Aproveitamento de {jogador}")
+        fig = px.line(
+            df_jogador.reset_index(),
+            x="date",
+            y="aproveitamento",
+            title=f"Aproveitamento de {jogador} ao Longo do Tempo",
+            labels={"date": "Data", "aproveitamento": "Aproveitamento (%)"},
+            markers=True,
+        )
+        st.plotly_chart(fig, use_container_width=True)
