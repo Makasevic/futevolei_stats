@@ -272,8 +272,10 @@ with tab4:
     # Iterar sobre cada jogador e calcular aproveitamento
     for idx, jogador in enumerate(jogadores, start=1):
         # Filtrar os dados do jogador
-        vitorias = (df[["winner1", "winner2"]] == jogador).sum(axis=1).cumsum()
+        vitorias = (df[["winner1", "winner2"]] == jogador).sum(axis=1)
+        vitorias = vitorias.groupby(vitorias.index).cumsum()
         derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1).cumsum()
+        derrotas = derrotas.groupby(derrotas.index).cumsum()
         jogos_totais = vitorias + derrotas
         aproveitamento = (vitorias / jogos_totais * 100).fillna(0)
 
