@@ -266,7 +266,7 @@ with tab4:
         rows=len(jogadores),
         cols=1,
         shared_xaxes=True,  # Compartilhar eixo x
-        vertical_spacing=0.05  # Reduzir espaçamento vertical entre os gráficos
+        vertical_spacing=0.001  # Reduzir espaçamento vertical entre os gráficos
     )
 
     # Iterar sobre cada jogador e calcular aproveitamento
