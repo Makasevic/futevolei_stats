@@ -305,7 +305,7 @@ with tab4:
         title=None,
         margin=dict(l=40, r=20, t=20, b=20),
     )
-    fig.update_xaxes(title_text="________________________________________________________")  # Nome para o eixo x compartilhado
+    fig.update_xaxes(title_text=None)  # Nome para o eixo x compartilhado
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
