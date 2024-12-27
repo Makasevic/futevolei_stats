@@ -81,6 +81,8 @@ def preparar_dados_individuais(df):
     jogadores["vitórias"] = jogadores["vitórias"].astype(int)
     jogadores["derrotas"] = jogadores["derrotas"].astype(int)
     jogadores = jogadores.loc[~jogadores["jogadores"].astype(str).str.contains("Outro"), :]
+    jogadores = jogadores.sort_values(by=['aproveitamento', 'vitórias'], ascending=False)
+    jogadores["aproveitamento"] = jogadores["aproveitamento"].round(0).astype(int) .astype(str) + "%"
 
     return jogadores
 
@@ -100,6 +102,8 @@ def preparar_dados_duplas(df):
     duplas["vitórias"] = duplas["vitórias"].astype(int)
     duplas["derrotas"] = duplas["derrotas"].astype(int)
     duplas = duplas.loc[~duplas["duplas"].astype(str).str.contains("Outro"), :]
+    duplas = duplas.sort_values(by=['aproveitamento', 'vitórias'], ascending=False)
+    duplas["aproveitamento"] = duplas["aproveitamento"].round(0).astype(int) .astype(str) + "%"
     
     return duplas
 
@@ -177,8 +181,6 @@ def exibir_graficos(df, eixo_x, titulo):
     st.plotly_chart(fig_derrotas, use_container_width=True, config={"staticPlot": True})
 
     st.subheader("Gráfico de Aproveitamento")
-    df = df.sort_values(by=['aproveitamento', 'vitórias'], ascending=False)
-    df["aproveitamento"] = df["aproveitamento"].round(0).astype(int) .astype(str) + "%"
     fig_aproveitamento = px.line(df, x=eixo_x, y="aproveitamento", title=f"Aproveitamento por {titulo}", markers=True, text="aproveitamento")
     fig_aproveitamento.update_traces(textposition="top center", textfont_size=12)
     st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": False})
