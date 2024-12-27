@@ -277,7 +277,7 @@ with tab4:
         derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1).cumsum()
         derrotas = derrotas.groupby(derrotas.index).sum().cumsum()
         jogos_totais = vitorias + derrotas
-        aproveitamento = (vitorias / jogos_totais * 100).fillna(0)
+        aproveitamento = (vitorias / jogos_totais).fillna(0)
 
         # Adicionar o gráfico do jogador aos subplots
         fig.add_scatter(
