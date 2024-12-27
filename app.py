@@ -271,13 +271,17 @@ with tab4:
 
     # Iterar sobre cada jogador e calcular aproveitamento
     for idx, jogador in enumerate(jogadores, start=1):
-        # Filtrar os dados do jogador
+        # Filtrar vitórias e derrotas por jogador
         vitorias = (df[["winner1", "winner2"]] == jogador).sum(axis=1)
-        vitorias = vitorias.groupby(vitorias.index).sum()
-        derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1).cumsum()
-        derrotas = derrotas.groupby(derrotas.index).sum()
-        jogos_totais = (vitorias + derrotas).fillna(0)
-        aproveitamento = (vitorias / jogos_totais).fillna(0)
+        derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1)
+
+        # Consolidar por data
+        vitorias_por_dia = vitorias.groupby(df.index).sum()
+        derrotas_por_dia = derrotas.groupby(df.index).sum()
+
+        # Calcular jogos totais e aproveitamento
+        jogos_totais = vitorias_por_dia + derrotas_por_dia
+        aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0)
 
         # Adicionar o gráfico do jogador aos subplots
         fig.add_scatter(
@@ -305,3 +309,4 @@ with tab4:
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
+
