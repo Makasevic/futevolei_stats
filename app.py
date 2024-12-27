@@ -216,7 +216,7 @@ for i in range(df.shape[0]):
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 # Interface Streamlit
-tab1, tab2, tab3 = st.tabs(["Jogadores", "Duplas", "Jogos"])
+tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Duplas", "Jogos", "Outro"])
 
 # Adicionar seleção de período em cada aba
 periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
