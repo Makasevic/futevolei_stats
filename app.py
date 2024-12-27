@@ -256,47 +256,49 @@ with tab3:
 with tab4:
     st.title("Aproveitamento de Jogadores ao Longo do Tempo")
 
-    # Preprocessamento para calcular aproveitamento ao longo do tempo
+    # Lista única de jogadores
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
-    jogadores = sorted(set(jogadores))  # Lista única de jogadores
+    jogadores = sorted(set(jogadores))
 
-    # DataFrame para armazenar os dados de aproveitamento por jogador
-    dados_aproveitamento = []
+    # Criar subplots com uma linha para cada jogador
+    fig = make_subplots(
+        rows=len(jogadores),
+        cols=1,
+        shared_xaxes=True,  # Compartilhar eixo x
+        vertical_spacing=0.02  # Espaçamento vertical entre os gráficos
+    )
 
-    # Iterar sobre o DataFrame por data e calcular vitórias e derrotas acumuladas
-    for jogador in jogadores:
-        jogos = []
-        vitorias = []
-        derrotas = []
+    # Iterar sobre cada jogador e calcular aproveitamento
+    for idx, jogador in enumerate(jogadores, start=1):
+        # Filtrar os dados do jogador
+        vitorias = (df[["winner1", "winner2"]] == jogador).sum(axis=1).cumsum()
+        derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1).cumsum()
+        jogos_totais = vitorias + derrotas
+        aproveitamento = (vitorias / jogos_totais * 100).fillna(0)
 
-        for date, row in df.iterrows():
-            # Verifica se o jogador participou como vencedor ou perdedor
-            win_count = sum([row["winner1"] == jogador, row["winner2"] == jogador])
-            loss_count = sum([row["loser1"] == jogador, row["loser2"] == jogador])
-
-            # Adiciona os dados cumulativos
-            jogos.append((date, win_count + loss_count))
-            vitorias.append((date, win_count))
-            derrotas.append((date, loss_count))
-
-        # Transformar em DataFrame para o jogador
-        df_jogador = pd.DataFrame(jogos, columns=["date", "jogos"]).set_index("date")
-        df_jogador["vitorias"] = pd.DataFrame(vitorias, columns=["date", "vitorias"]).set_index("date")
-        df_jogador["derrotas"] = pd.DataFrame(derrotas, columns=["date", "derrotas"]).set_index("date")
-        df_jogador["aproveitamento"] = df_jogador["vitorias"] / df_jogador["jogos"] * 100
-
-        # Armazena os dados para exibição
-        dados_aproveitamento.append((jogador, df_jogador))
-
-    # Criar gráficos individuais para cada jogador
-    for jogador, df_jogador in dados_aproveitamento:
-        st.subheader(f"Aproveitamento de {jogador}")
-        fig = px.line(
-            df_jogador.reset_index(),
-            x="date",
-            y="aproveitamento",
-            title=f"Aproveitamento de {jogador} ao Longo do Tempo",
-            labels={"date": "Data", "aproveitamento": "Aproveitamento (%)"},
-            markers=True,
+        # Adicionar o gráfico do jogador aos subplots
+        fig.add_scatter(
+            x=aproveitamento.index,
+            y=aproveitamento,
+            mode="lines+markers",
+            name=jogador,
+            row=idx,
+            col=1,
+            line=dict(width=1),
+            marker=dict(size=4)
         )
-        st.plotly_chart(fig, use_container_width=True)
+
+        # Adicionar o nome do jogador no eixo y
+        fig.update_yaxes(title_text=jogador, row=idx, col=1)
+
+    # Ajustar layout
+    fig.update_layout(
+        height=150 * len(jogadores),  # Altura total do gráfico
+        showlegend=False,  # Não mostrar legenda
+        title=None,
+        margin=dict(l=40, r=20, t=20, b=20),
+    )
+    fig.update_xaxes(title_text="Data")  # Nome para o eixo x compartilhado
+
+    # Exibir o gráfico
+    st.plotly_chart(fig, use_container_width=True)
