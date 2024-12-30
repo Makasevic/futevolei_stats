@@ -353,7 +353,8 @@ with tab4:
     fig.update_yaxes(title="Aproveitamento (%)")
     st.plotly_chart(fig, use_container_width=True)
 
-        # fregueses e carrascos
+    # fregueses e carrascos
+    df_saldo = preparar_dados_confrontos_jogadores(df)
     saldo_jogador = df_saldo.loc[jogador_selecionado]
     
     # Separar os maiores fregueses (saldo positivo) e maiores carrascos (saldo negativo)
