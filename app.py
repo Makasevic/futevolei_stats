@@ -353,25 +353,14 @@ with tab4:
     fig.update_yaxes(title="Aproveitamento (%)")
     st.plotly_chart(fig, use_container_width=True)
 
-    # fregueses e carrascos
-    saldos = pd.Series(0, index=jogadores)
+        # fregueses e carrascos
+    saldo_jogador = df_saldo.loc[jogador_selecionado]
     
-    for _, row in df.iterrows():
-        winners = [row["winner1"], row["winner2"]]
-        losers = [row["loser1"], row["loser2"]]
-    
-        if jogador_selecionado in winners:
-            for loser in losers:
-                saldos[loser] -= 1
-        elif jogador_selecionado in losers:
-            for winner in winners:
-                saldos[winner] += 1
-    
-    # Separar os maiores fregueses (saldo positivo) e os maiores carrascos (saldo negativo)
-    fregueses = saldos[saldos > 0].sort_values(ascending=False).head(5).reset_index()
+    # Separar os maiores fregueses (saldo positivo) e maiores carrascos (saldo negativo)
+    fregueses = saldo_jogador[saldo_jogador > 0].sort_values(ascending=False).head(5).reset_index()
     fregueses.columns = ["Jogador", "Saldo de Vitórias"]
     
-    carrascos = saldos[saldos < 0].sort_values().head(5).reset_index()
+    carrascos = saldo_jogador[saldo_jogador < 0].sort_values().head(5).reset_index()
     carrascos.columns = ["Jogador", "Saldo de Vitórias"]
     
     # Exibir as tabelas
