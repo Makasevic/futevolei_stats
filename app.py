@@ -366,7 +366,7 @@ with tab4:
     # Contagem de parcerias
     contagem_parcerias = pd.Series(parcerias).value_counts()
     contagem_parcerias = contagem_parcerias.reindex(index=jogadores)
-    contagem_parcerias = contagem_parcerias.fillna(0).sort_values(ascending=False)
+    contagem_parcerias = contagem_parcerias.fillna(0).sort_values(ascending=False).astype(int)
     
     # Top 5 parcerias mais frequentes
     st.subheader("Top 5 parcerias mais frequentes")
