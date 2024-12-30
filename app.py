@@ -382,7 +382,7 @@ with tab5:
     # Gráfico de aproveitamento do jogador
     st.subheader("Aproveitamento ao longo do tempo")
     fig = px.line(
-        x=aproveitamento.index, 
+        x=aproveitamento.index.date, 
         y=aproveitamento, 
         title=f"Aproveitamento de {jogador_selecionado} ao longo do tempo",
         markers=True
@@ -410,12 +410,12 @@ with tab5:
     st.subheader("Top 5 parcerias mais frequentes")
     top5_mais = contagem_parcerias.head(5).reset_index()
     top5_mais.columns = ["Jogador", "Jogos"]
-    st.table(top5_mais)
+    st.table(top5_mais.set_index("Jogador"))
     
     # Top 5 parcerias menos frequentes
     st.subheader("Top 5 parcerias menos frequentes")
     top5_menos = contagem_parcerias.tail(5).reset_index()
     top5_menos.columns = ["Jogador", "Jogos"]
-    st.table(top5_menos)
+    st.table(top5_menos.set_index("Jogador"))
     
 
