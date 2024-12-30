@@ -168,6 +168,31 @@ def preparar_dados_controntos_duplas(df):
     return saldo_final_duplas
 
 
+def preparar_matriz_parcerias(df):
+    """Prepara uma matriz com o número de vezes que cada jogador jogou com outro jogador."""
+    # Obter todos os jogadores únicos
+    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    jogadores = sorted(set(jogadores))
+
+    # Criar matriz inicializada com zeros
+    matriz_parcerias = pd.DataFrame(0, index=jogadores, columns=jogadores)
+
+    # Preencher matriz com contagem de parcerias
+    for _, row in df.iterrows():
+        # Vencedores e perdedores
+        dupla1 = [row["winner1"], row["winner2"]]
+        dupla2 = [row["loser1"], row["loser2"]]
+        
+        # Contar parcerias
+        for dupla in [dupla1, dupla2]:
+            for jogador1 in dupla:
+                for jogador2 in dupla:
+                    if jogador1 != jogador2:  # Não contar parcerias consigo mesmo
+                        matriz_parcerias.at[jogador1, jogador2] += 1
+
+    return matriz_parcerias
+
+
 def exibir_graficos(df, eixo_x, titulo):
     """Exibe gráficos de vitórias, derrotas e aproveitamento."""
     st.subheader("Gráfico de Vitórias")
@@ -242,6 +267,10 @@ with tab1:
     st.subheader("Estatíticas dos confrontos")
     st.write("Esta tabela mostra o saldo de confrontos do jogador (na linha) em relação a cada adversário (na coluna).")
     st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True, key="duplas")
+    st.subheader("Matriz de Parcerias")
+    st.write("Esta tabela mostra quantas vezes cada jogador jogou com outro jogador como dupla.")
+    matriz_parcerias = preparar_matriz_parcerias(df)
+    st.dataframe(matriz_parcerias, use_container_width=True)
 
 with tab2:
     st.title("Análise de Desempenho das Duplas")
