@@ -4,6 +4,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 from datetime import datetime, timedelta
 import requests
+import random
 
 
 # Configuração da API do Notion
