@@ -190,6 +190,7 @@ def preparar_matriz_parcerias(df):
                     if jogador1 != jogador2:  # Não contar parcerias consigo mesmo
                         matriz_parcerias.at[jogador1, jogador2] += 1
 
+    matriz_parcerias = style_dataframe(matriz_parcerias)
     return matriz_parcerias
 
 
