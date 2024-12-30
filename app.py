@@ -358,6 +358,10 @@ with tab4:
         elif jogador_selecionado in dupla2:
             parceiro = dupla2[0] if dupla2[1] == jogador_selecionado else dupla2[1]
             parcerias.append(parceiro)
+
+
+    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    jogadores = sorted(set(jogadores))
     
     # Contagem de parcerias
     contagem_parcerias = pd.Series(parcerias).value_counts()
