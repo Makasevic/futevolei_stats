@@ -250,7 +250,7 @@ for i in range(df.shape[0]):
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 # Interface Streamlit
-tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Duplas", "Jogos", "Evolução"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Jogadores", "Duplas", "Jogos", "Evolução", "Detalhamento"])
 
 # Adicionar seleção de período em cada aba
 periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
@@ -347,3 +347,73 @@ with tab4:
 
     # Exibir o gráfico
     st.plotly_chart(fig, use_container_width=True)
+
+
+with tab5:
+    st.title("Análise Individual do Jogador")
+    
+    # Dropdown para selecionar o jogador
+    jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores)
+    
+    # Filtro de vitórias e derrotas por jogador
+    vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
+    derrotas = (df[["loser1", "loser2"]] == jogador_selecionado).sum(axis=1)
+    
+    # Consolidar por data
+    vitorias_por_dia = vitorias.groupby(df.index).sum()
+    derrotas_por_dia = derrotas.groupby(df.index).sum()
+    
+    # Calcular jogos totais e aproveitamento
+    jogos_totais = vitorias_por_dia + derrotas_por_dia
+    aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0)
+    
+    # Gráfico de aproveitamento do jogador
+    st.subheader("Aproveitamento ao longo do tempo")
+    fig = px.line(
+        x=aproveitamento.index, 
+        y=aproveitamento, 
+        title=f"Aproveitamento de {jogador_selecionado} ao longo do tempo",
+        markers=True
+    )
+    fig.update_traces(mode="lines+markers", marker=dict(size=4))
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Calcular parcerias
+    parcerias = []
+    for _, row in df.iterrows():
+        dupla1 = [row["winner1"], row["winner2"]]
+        dupla2 = [row["loser1"], row["loser2"]]
+        
+        if jogador_selecionado in dupla1:
+            parceiro = dupla1[0] if dupla1[1] == jogador_selecionado else dupla1[1]
+            parcerias.append(parceiro)
+        elif jogador_selecionado in dupla2:
+            parceiro = dupla2[0] if dupla2[1] == jogador_selecionado else dupla2[1]
+            parcerias.append(parceiro)
+    
+    # Contagem de parcerias
+    contagem_parcerias = pd.Series(parcerias).value_counts()
+    
+    # Top 5 parcerias mais frequentes
+    st.subheader("Top 5 parcerias mais frequentes")
+    top5_mais = contagem_parcerias.head(5).reset_index()
+    top5_mais.columns = ["Jogador", "Jogos"]
+    st.table(top5_mais)
+    
+    # Top 5 parcerias menos frequentes
+    st.subheader("Top 5 parcerias menos frequentes")
+    top5_menos = contagem_parcerias.tail(5).reset_index()
+    top5_menos.columns = ["Jogador", "Jogos"]
+    st.table(top5_menos)
+    
+    # Informações gerais do jogador
+    total_jogos = vitorias.sum() + derrotas.sum()
+    total_vitorias = vitorias.sum()
+    total_derrotas = derrotas.sum()
+    
+    st.subheader("Informações gerais")
+    st.write(f"**Jogador:** {jogador_selecionado}")
+    st.write(f"**Número de jogos realizados:** {total_jogos}")
+    st.write(f"**Vitórias:** {total_vitorias}")
+    st.write(f"**Derrotas:** {total_derrotas}")
+    st.write(f"**Aproveitamento:** {aproveitamento.mean():.2f}%")
