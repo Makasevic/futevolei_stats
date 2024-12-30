@@ -355,7 +355,7 @@ with tab4:
 
     # fregueses e carrascos
     df_saldo = preparar_dados_confrontos_jogadores(df)
-    saldo_jogador = df_saldo.loc[jogador_selecionado]
+    saldo_jogador = df_saldo.loc[jogador_selecionado, :]
     
     # Separar os maiores fregueses (saldo positivo) e maiores carrascos (saldo negativo)
     fregueses = saldo_jogador[saldo_jogador > 0].sort_values(ascending=False).head(5).reset_index()
