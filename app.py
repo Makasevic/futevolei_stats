@@ -383,12 +383,18 @@ with tab5:
     # Gráfico de aproveitamento do jogador
     st.subheader("Aproveitamento ao longo do tempo")
     fig = px.line(
-        x=aproveitamento.index.date, 
+        x=aproveitamento.index, 
         y=aproveitamento, 
         title=f"Aproveitamento de {jogador_selecionado} ao longo do tempo",
         markers=True
     )
     fig.update_traces(mode="lines+markers", marker=dict(size=4))
+    
+    # Formatar o eixo X para exibir apenas as datas
+    fig.update_xaxes(
+        tickformat="%b %d, %Y",  # Formato para mostrar mês, dia e ano (sem horas)
+        title="Data"
+    )
     st.plotly_chart(fig, use_container_width=True)
     
     # Calcular parcerias
