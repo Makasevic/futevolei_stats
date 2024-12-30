@@ -354,6 +354,18 @@ with tab5:
     
     # Dropdown para selecionar o jogador
     jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores)
+
+    # Informações gerais do jogador
+    total_jogos = vitorias.sum() + derrotas.sum()
+    total_vitorias = vitorias.sum()
+    total_derrotas = derrotas.sum()
+    
+    st.subheader("Informações gerais")
+    st.write(f"**Jogador:** {jogador_selecionado}")
+    st.write(f"**Número de jogos realizados:** {total_jogos}")
+    st.write(f"**Vitórias:** {total_vitorias}")
+    st.write(f"**Derrotas:** {total_derrotas}")
+    st.write(f"**Aproveitamento:** {aproveitamento.mean():.2f}%")
     
     # Filtro de vitórias e derrotas por jogador
     vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
@@ -406,14 +418,4 @@ with tab5:
     top5_menos.columns = ["Jogador", "Jogos"]
     st.table(top5_menos)
     
-    # Informações gerais do jogador
-    total_jogos = vitorias.sum() + derrotas.sum()
-    total_vitorias = vitorias.sum()
-    total_derrotas = derrotas.sum()
-    
-    st.subheader("Informações gerais")
-    st.write(f"**Jogador:** {jogador_selecionado}")
-    st.write(f"**Número de jogos realizados:** {total_jogos}")
-    st.write(f"**Vitórias:** {total_vitorias}")
-    st.write(f"**Derrotas:** {total_derrotas}")
-    st.write(f"**Aproveitamento:** {aproveitamento.mean():.2f}%")
+
