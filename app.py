@@ -378,8 +378,8 @@ with tab5:
     # Calcular jogos totais e aproveitamento
     jogos_totais = vitorias_por_dia + derrotas_por_dia
     aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0)
-    aproveitamento.index = pd.to_datetime(aproveitamento.index)
-    
+    aproveitamento = aproveitamento.round(0).astype(int) .astype(str) + "%"
+
     # Gráfico de aproveitamento do jogador
     st.subheader("Aproveitamento ao longo do tempo")
     fig = px.line(
@@ -388,7 +388,7 @@ with tab5:
         title=f"Aproveitamento de {jogador_selecionado} ao longo do tempo",
         markers=True
     )
-    fig.update_traces(mode="lines+markers", marker=dict(size=4))
+    fig.update_traces(mode="lines+markers", marker=dict(size=4), textposition="top center", textfont_size=12)
     
     # Formatar o eixo X para exibir apenas as datas
     fig.update_xaxes(
