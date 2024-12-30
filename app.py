@@ -393,6 +393,7 @@ with tab5:
     
     # Formatar o eixo X para exibir apenas as datas
     fig.update_xaxes(
+        type="category", 
         tickformat="%b %d, %Y",  # Formato para mostrar mês, dia e ano (sem horas)
         title="Data"
     )
