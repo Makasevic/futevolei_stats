@@ -295,12 +295,15 @@ with tab3:
 with tab4:
     st.title("Análise Individual do Jogador")
 
+    # Lista de jogadores
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
     jogadores = sorted(set(jogadores))
     jogadores = [x for x in jogadores if "Outro" not in x]
-
+    # Escolher aleatoriamente um jogador como padrão
+    jogador_default = random.choice(jogadores)
     # Dropdown para selecionar o jogador
-    jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores)
+    jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores, index=jogadores.index(jogador_default))
+    # Remover o jogador selecionado da lista
     jogadores = [x for x in jogadores if x != jogador_selecionado]
     
 
