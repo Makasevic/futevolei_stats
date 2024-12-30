@@ -296,107 +296,110 @@ with tab3:
 with tab4:
     st.title("Análise Individual do Jogador")
 
-    # Lista de jogadores
+    # Lista de jogadores com uma opção inicial "Selecione um jogador"
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
     jogadores = sorted(set(jogadores))
     jogadores = [x for x in jogadores if "Outro" not in x]
-
-    # Escolher aleatoriamente um jogador como padrão
-    jogador_default = random.choice(jogadores)
+    jogadores = ["Selecione um jogador"] + jogadores  # Adiciona a opção inicial
 
     # Dropdown para selecionar o jogador
-    jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores, index=jogadores.index(jogador_default))
+    jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores)
 
-    # Filtro de vitórias e derrotas por jogador
-    vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
-    derrotas = (df[["loser1", "loser2"]] == jogador_selecionado).sum(axis=1)
-    
-    # Consolidar por data
-    vitorias_por_dia = vitorias.groupby(df.index).sum()
-    derrotas_por_dia = derrotas.groupby(df.index).sum()
-    
-    # Calcular jogos totais e aproveitamento
-    jogos_totais = vitorias_por_dia + derrotas_por_dia
-    aproveitamento = (vitorias_por_dia / jogos_totais * 100).dropna().round(0)
-    
-    # Informações gerais do jogador
-    total_jogos = vitorias.sum() + derrotas.sum()
-    total_vitorias = vitorias.sum()
-    total_derrotas = derrotas.sum()
-    media_aproveitamento = aproveitamento.mean()
-
-    st.subheader("Informações gerais")
-    st.write(f"**Jogador:** {jogador_selecionado}")
-    st.write(f"**Número de jogos realizados:** {total_jogos}")
-    st.write(f"**Vitórias:** {total_vitorias}")
-    st.write(f"**Derrotas:** {total_derrotas}")
-    st.write(f"**Aproveitamento médio:** {media_aproveitamento:.2f}%")
-
-    # Gráfico de aproveitamento do jogador
-    st.subheader("Aproveitamento ao longo do tempo")
-    fig = px.line(
-        x=aproveitamento.index, 
-        y=aproveitamento, 
-        title=f"Aproveitamento de {jogador_selecionado} ao longo do tempo",
-        markers=True,
-        text=aproveitamento.astype(str) + "%"  # Adiciona as labels nos pontos
-    )
-    fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
-    
-    # Formatar o eixo X para exibir apenas as datas
-    fig.update_xaxes(
-        type="category", 
-        tickformat="%b %d, %Y",  # Formato para mostrar mês, dia e ano (sem horas)
-        title="Data"
-    )
-    fig.update_yaxes(title="Aproveitamento (%)")
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Fregueses e carrascos
-    df_saldo = preparar_dados_confrontos_jogadores(df)
-    saldo_jogador = df_saldo.loc[jogador_selecionado, :]
-    
-    # Separar os maiores fregueses (saldo positivo) e maiores carrascos (saldo negativo)
-    fregueses = saldo_jogador[saldo_jogador > 0].sort_values(ascending=False).head(5).reset_index()
-    fregueses.columns = ["Jogador", "Saldo de Vitórias"]
-    
-    carrascos = saldo_jogador[saldo_jogador < 0].sort_values().head(5).reset_index()
-    carrascos.columns = ["Jogador", "Saldo de Vitórias"]
-    
-    # Exibir as tabelas
-    st.subheader("Maiores Fregueses")
-    st.table(fregueses.set_index("Jogador"))
-    
-    st.subheader("Maiores Carrascos")
-    st.table(carrascos.set_index("Jogador"))
-
-    # Calcular parcerias
-    parcerias = []
-    for _, row in df.iterrows():
-        dupla1 = [row["winner1"], row["winner2"]]
-        dupla2 = [row["loser1"], row["loser2"]]
+    # Verifica se um jogador foi selecionado
+    if jogador_selecionado != "Selecione um jogador":
+        # Filtro de vitórias e derrotas por jogador
+        vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
+        derrotas = (df[["loser1", "loser2"]] == jogador_selecionado).sum(axis=1)
         
-        if jogador_selecionado in dupla1:
-            parceiro = dupla1[0] if dupla1[1] == jogador_selecionado else dupla1[1]
-            parcerias.append(parceiro)
-        elif jogador_selecionado in dupla2:
-            parceiro = dupla2[0] if dupla2[1] == jogador_selecionado else dupla2[1]
-            parcerias.append(parceiro)
-    
-    # Contagem de parcerias
-    contagem_parcerias = pd.Series(parcerias).value_counts()
-    contagem_parcerias = contagem_parcerias.reindex(index=[x for x in jogadores if x != jogador_selecionado])
-    contagem_parcerias = contagem_parcerias.fillna(0).sort_values(ascending=False).astype(int)
-    
-    # Top 5 parcerias mais frequentes
-    st.subheader("Top 5 parcerias mais frequentes")
-    top5_mais = contagem_parcerias.head(5).reset_index()
-    top5_mais.columns = ["Jogador", "Jogos"]
-    st.table(top5_mais.set_index("Jogador"))
-    
-    # Top 5 parcerias menos frequentes
-    st.subheader("Top 5 parcerias menos frequentes")
-    top5_menos = contagem_parcerias.tail(5).reset_index()
-    top5_menos.columns = ["Jogador", "Jogos"]
-    st.table(top5_menos.set_index("Jogador"))  
+        # Consolidar por data
+        vitorias_por_dia = vitorias.groupby(df.index).sum()
+        derrotas_por_dia = derrotas.groupby(df.index).sum()
+        
+        # Calcular jogos totais e aproveitamento
+        jogos_totais = vitorias_por_dia + derrotas_por_dia
+        aproveitamento = (vitorias_por_dia / jogos_totais * 100).dropna().round(0)
+        
+        # Informações gerais do jogador
+        total_jogos = vitorias.sum() + derrotas.sum()
+        total_vitorias = vitorias.sum()
+        total_derrotas = derrotas.sum()
+        media_aproveitamento = aproveitamento.mean()
+
+        st.subheader("Informações gerais")
+        st.write(f"**Jogador:** {jogador_selecionado}")
+        st.write(f"**Número de jogos realizados:** {total_jogos}")
+        st.write(f"**Vitórias:** {total_vitorias}")
+        st.write(f"**Derrotas:** {total_derrotas}")
+        st.write(f"**Aproveitamento médio:** {media_aproveitamento:.2f}%")
+
+        # Gráfico de aproveitamento do jogador
+        st.subheader("Aproveitamento ao longo do tempo")
+        fig = px.line(
+            x=aproveitamento.index, 
+            y=aproveitamento, 
+            title=f"Aproveitamento de {jogador_selecionado} ao longo do tempo",
+            markers=True,
+            text=aproveitamento.astype(str) + "%"  # Adiciona as labels nos pontos
+        )
+        fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
+        
+        # Formatar o eixo X para exibir apenas as datas
+        fig.update_xaxes(
+            type="category", 
+            tickformat="%b %d, %Y",  # Formato para mostrar mês, dia e ano (sem horas)
+            title="Data"
+        )
+        fig.update_yaxes(title="Aproveitamento (%)")
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Fregueses e carrascos
+        df_saldo = preparar_dados_confrontos_jogadores(df)
+        saldo_jogador = df_saldo.loc[jogador_selecionado, :]
+        
+        # Separar os maiores fregueses (saldo positivo) e maiores carrascos (saldo negativo)
+        fregueses = saldo_jogador[saldo_jogador > 0].sort_values(ascending=False).head(5).reset_index()
+        fregueses.columns = ["Jogador", "Saldo de Vitórias"]
+        
+        carrascos = saldo_jogador[saldo_jogador < 0].sort_values().head(5).reset_index()
+        carrascos.columns = ["Jogador", "Saldo de Vitórias"]
+        
+        # Exibir as tabelas
+        st.subheader("Maiores Fregueses")
+        st.table(fregueses.set_index("Jogador"))
+        
+        st.subheader("Maiores Carrascos")
+        st.table(carrascos.set_index("Jogador"))
+
+        # Calcular parcerias
+        parcerias = []
+        for _, row in df.iterrows():
+            dupla1 = [row["winner1"], row["winner2"]]
+            dupla2 = [row["loser1"], row["loser2"]]
+            
+            if jogador_selecionado in dupla1:
+                parceiro = dupla1[0] if dupla1[1] == jogador_selecionado else dupla1[1]
+                parcerias.append(parceiro)
+            elif jogador_selecionado in dupla2:
+                parceiro = dupla2[0] if dupla2[1] == jogador_selecionado else dupla2[1]
+                parcerias.append(parceiro)
+        
+        # Contagem de parcerias
+        contagem_parcerias = pd.Series(parcerias).value_counts()
+        contagem_parcerias = contagem_parcerias.reindex(index=[x for x in jogadores if x != jogador_selecionado])
+        contagem_parcerias = contagem_parcerias.fillna(0).sort_values(ascending=False).astype(int)
+        
+        # Top 5 parcerias mais frequentes
+        st.subheader("Top 5 parcerias mais frequentes")
+        top5_mais = contagem_parcerias.head(5).reset_index()
+        top5_mais.columns = ["Jogador", "Jogos"]
+        st.table(top5_mais.set_index("Jogador"))
+        
+        # Top 5 parcerias menos frequentes
+        st.subheader("Top 5 parcerias menos frequentes")
+        top5_menos = contagem_parcerias.tail(5).reset_index()
+        top5_menos.columns = ["Jogador", "Jogos"]
+        st.table(top5_menos.set_index("Jogador"))
+    else:
+        st.write("Por favor, selecione um jogador para visualizar os dados.")
+
 
