@@ -83,7 +83,7 @@ def preparar_dados_individuais(df):
     jogadores = jogadores.loc[~jogadores["jogadores"].astype(str).str.contains("Outro"), :]
     jogadores = jogadores.sort_values(by=['aproveitamento', 'vitórias'], ascending=False)
     jogadores["aproveitamento"] = jogadores["aproveitamento"].round(0).astype(int) .astype(str) + "%"
-    jogadores = jogadores.reset_index().rename({'index':'Rank'}, axis=1)
+    jogadores["Rank"] = range(1, jogadores.shape[0] + 1)
     return jogadores
 
 
