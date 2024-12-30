@@ -265,10 +265,10 @@ with tab1:
     st.subheader("Estatíticas dos jogadores")
     st.dataframe(jogadores.set_index("rank"))
     st.subheader("Estatíticas dos confrontos")
-    st.write("Esta tabela mostra o saldo de confrontos do jogador (na linha) em relação a cada adversário (na coluna).")
+    st.write("Esta tabela mostra o saldo de confrontos do jogador (linha) em relação a cada adversário (coluna).")
     st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True, key="duplas")
     st.subheader("Matriz de Parcerias")
-    st.write("Esta tabela mostra quantas vezes cada jogador jogou com outro jogador como dupla.")
+    st.write("Esta tabela mostra quantas vezes cada jogador (linha) jogou com outro jogador como dupla (coluna).")
     matriz_parcerias = preparar_matriz_parcerias(df)
     st.dataframe(matriz_parcerias, use_container_width=True)
 
