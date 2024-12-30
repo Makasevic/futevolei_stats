@@ -295,8 +295,10 @@ with tab3:
 with tab4:
     st.title("Análise Individual do Jogador")
 
-    # jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
-    # jogadores = sorted(set(jogadores))
+    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    jogadores = sorted(set(jogadores))
+    jogadores = [x for x in jogadores if x != jogador_selecionado]
+    jogadores = [x for x in jogadores if "Outro" not in x]
 
     # Dropdown para selecionar o jogador
     jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores)
@@ -358,12 +360,6 @@ with tab4:
         elif jogador_selecionado in dupla2:
             parceiro = dupla2[0] if dupla2[1] == jogador_selecionado else dupla2[1]
             parcerias.append(parceiro)
-
-
-    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
-    jogadores = sorted(set(jogadores))
-    jogadores = [x for x in jogadores if x != jogador_selecionado]
-    jogadores = [x for x in jogadores if "Outro" not in x]
     
     # Contagem de parcerias
     contagem_parcerias = pd.Series(parcerias).value_counts()
