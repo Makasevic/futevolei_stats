@@ -363,6 +363,7 @@ with tab4:
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
     jogadores = sorted(set(jogadores))
     jogadores = [x for x in jogadores if x != jogador_selecionado]
+    jogadores = [x for x in jogadores if "Outro" not in x]
     
     # Contagem de parcerias
     contagem_parcerias = pd.Series(parcerias).value_counts()
