@@ -300,13 +300,12 @@ with tab4:
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
     jogadores = sorted(set(jogadores))
     jogadores = [x for x in jogadores if "Outro" not in x]
+
     # Escolher aleatoriamente um jogador como padrão
     jogador_default = random.choice(jogadores)
+
     # Dropdown para selecionar o jogador
     jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores, index=jogadores.index(jogador_default))
-    # Remover o jogador selecionado da lista
-    jogadores = [x for x in jogadores if x != jogador_selecionado]
-    
 
     # Filtro de vitórias e derrotas por jogador
     vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
@@ -353,7 +352,7 @@ with tab4:
     fig.update_yaxes(title="Aproveitamento (%)")
     st.plotly_chart(fig, use_container_width=True)
 
-    # fregueses e carrascos
+    # Fregueses e carrascos
     df_saldo = preparar_dados_confrontos_jogadores(df)
     saldo_jogador = df_saldo.loc[jogador_selecionado, :]
     
@@ -371,7 +370,6 @@ with tab4:
     st.subheader("Maiores Carrascos")
     st.table(carrascos.set_index("Jogador"))
 
-
     # Calcular parcerias
     parcerias = []
     for _, row in df.iterrows():
@@ -387,7 +385,7 @@ with tab4:
     
     # Contagem de parcerias
     contagem_parcerias = pd.Series(parcerias).value_counts()
-    contagem_parcerias = contagem_parcerias.reindex(index=jogadores)
+    contagem_parcerias = contagem_parcerias.reindex(index=[x for x in jogadores if x != jogador_selecionado])
     contagem_parcerias = contagem_parcerias.fillna(0).sort_values(ascending=False).astype(int)
     
     # Top 5 parcerias mais frequentes
@@ -400,7 +398,5 @@ with tab4:
     st.subheader("Top 5 parcerias menos frequentes")
     top5_menos = contagem_parcerias.tail(5).reset_index()
     top5_menos.columns = ["Jogador", "Jogos"]
-    st.table(top5_menos.set_index("Jogador"))
-
-    
+    st.table(top5_menos.set_index("Jogador"))  
 
