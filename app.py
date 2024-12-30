@@ -355,18 +355,6 @@ with tab5:
     # Dropdown para selecionar o jogador
     jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores)
 
-    # Informações gerais do jogador
-    total_jogos = vitorias.sum() + derrotas.sum()
-    total_vitorias = vitorias.sum()
-    total_derrotas = derrotas.sum()
-    
-    st.subheader("Informações gerais")
-    st.write(f"**Jogador:** {jogador_selecionado}")
-    st.write(f"**Número de jogos realizados:** {total_jogos}")
-    st.write(f"**Vitórias:** {total_vitorias}")
-    st.write(f"**Derrotas:** {total_derrotas}")
-    st.write(f"**Aproveitamento:** {aproveitamento.mean():.2f}%")
-    
     # Filtro de vitórias e derrotas por jogador
     vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
     derrotas = (df[["loser1", "loser2"]] == jogador_selecionado).sum(axis=1)
@@ -377,8 +365,20 @@ with tab5:
     
     # Calcular jogos totais e aproveitamento
     jogos_totais = vitorias_por_dia + derrotas_por_dia
-    aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0)
-    aproveitamento = aproveitamento.round(0).astype(int) .astype(str) + "%"
+    aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0).round(0)
+    
+    # Informações gerais do jogador
+    total_jogos = vitorias.sum() + derrotas.sum()
+    total_vitorias = vitorias.sum()
+    total_derrotas = derrotas.sum()
+    media_aproveitamento = aproveitamento.mean()
+
+    st.subheader("Informações gerais")
+    st.write(f"**Jogador:** {jogador_selecionado}")
+    st.write(f"**Número de jogos realizados:** {total_jogos}")
+    st.write(f"**Vitórias:** {total_vitorias}")
+    st.write(f"**Derrotas:** {total_derrotas}")
+    st.write(f"**Aproveitamento médio:** {media_aproveitamento:.2f}%")
 
     # Gráfico de aproveitamento do jogador
     st.subheader("Aproveitamento ao longo do tempo")
@@ -386,15 +386,17 @@ with tab5:
         x=aproveitamento.index, 
         y=aproveitamento, 
         title=f"Aproveitamento de {jogador_selecionado} ao longo do tempo",
-        markers=True
+        markers=True,
+        text=aproveitamento.astype(str) + "%"  # Adiciona as labels nos pontos
     )
-    fig.update_traces(mode="lines+markers", marker=dict(size=4), textposition="top center", textfont_size=12)
+    fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
     
     # Formatar o eixo X para exibir apenas as datas
     fig.update_xaxes(
         tickformat="%b %d, %Y",  # Formato para mostrar mês, dia e ano (sem horas)
         title="Data"
     )
+    fig.update_yaxes(title="Aproveitamento (%)")
     st.plotly_chart(fig, use_container_width=True)
     
     # Calcular parcerias
@@ -424,5 +426,6 @@ with tab5:
     top5_menos = contagem_parcerias.tail(5).reset_index()
     top5_menos.columns = ["Jogador", "Jogos"]
     st.table(top5_menos.set_index("Jogador"))
+
     
 
