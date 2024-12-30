@@ -83,7 +83,7 @@ def preparar_dados_individuais(df):
     jogadores = jogadores.loc[~jogadores["jogadores"].astype(str).str.contains("Outro"), :]
     jogadores = jogadores.sort_values(by=['aproveitamento', 'vitórias'], ascending=False)
     jogadores["aproveitamento"] = jogadores["aproveitamento"].round(0).astype(int) .astype(str) + "%"
-    jogadores["Rank"] = range(1, jogadores.shape[0] + 1)
+    jogadores["rank"] = range(1, jogadores.shape[0] + 1)
     return jogadores
 
 
@@ -263,7 +263,7 @@ with tab1:
     jogadores = preparar_dados_individuais(df_filtrado)
     exibir_graficos(jogadores, "jogadores", "Jogador")
     st.subheader("Estatíticas dos jogadores")
-    st.dataframe(jogadores.set_index("Rank"))
+    st.dataframe(jogadores.set_index("rank"))
     st.subheader("Estatíticas dos confrontos")
     st.write("Esta tabela mostra o saldo de confrontos do jogador (na linha) em relação a cada adversário (na coluna).")
     st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True, key="duplas")
