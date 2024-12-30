@@ -183,7 +183,7 @@ def exibir_graficos(df, eixo_x, titulo):
     st.subheader("Gráfico de Aproveitamento")
     fig_aproveitamento = px.line(df, x=eixo_x, y="aproveitamento", title=f"Aproveitamento por {titulo}", markers=True, text="aproveitamento")
     fig_aproveitamento.update_traces(textposition="top center", textfont_size=12)
-    st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": False})
+    st.plotly_chart(fig_aproveitamento, use_container_width=True, config={"staticPlot": True})
 
 
 def background_gradient(val, max_val, min_val):
