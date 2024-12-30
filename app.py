@@ -83,7 +83,7 @@ def preparar_dados_individuais(df):
     jogadores = jogadores.loc[~jogadores["jogadores"].astype(str).str.contains("Outro"), :]
     jogadores = jogadores.sort_values(by=['aproveitamento', 'vitórias'], ascending=False)
     jogadores["aproveitamento"] = jogadores["aproveitamento"].round(0).astype(int) .astype(str) + "%"
-
+    jogadores = jogadores.reset_index()
     return jogadores
 
 
@@ -131,8 +131,6 @@ def preparar_dados_confrontos_jogadores(df):
     saldo_final = saldo_final.set_index('Jogador')
     saldo_final = saldo_final.loc[~saldo_final.index.astype(str).str.contains("Outro"), 
                                   ~saldo_final.columns.astype(str).str.contains("Outro")]
-    max_val = saldo_final.max().max()
-    min_val = saldo_final.min().min()
     saldo_final = style_dataframe(saldo_final)
     return saldo_final
 
@@ -162,8 +160,6 @@ def preparar_dados_controntos_duplas(df):
     saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
     saldo_final_duplas = saldo_final_duplas.loc[~saldo_final_duplas.index.astype(str).str.contains("Outro"), 
                                                 ~saldo_final_duplas.columns.astype(str).str.contains("Outro")]
-    max_val = saldo_final_duplas.max().max()
-    min_val = saldo_final_duplas.min().min()
     saldo_final_duplas = style_dataframe(saldo_final_duplas)
     return saldo_final_duplas
 
@@ -270,7 +266,7 @@ with tab1:
     st.dataframe(jogadores.set_index("jogadores"))
     st.subheader("Estatíticas dos confrontos")
     st.write("Esta tabela mostra o saldo de confrontos do jogador (na linha) em relação a cada adversário (na coluna).")
-    st.dataframe(preparar_dados_confrontos_jogadores(df).reset_index(), use_container_width=True, key="duplas")
+    st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True, key="duplas")
     st.subheader("Matriz de Parcerias")
     st.write("Esta tabela mostra quantas vezes cada jogador jogou com outro jogador como dupla.")
     matriz_parcerias = preparar_matriz_parcerias(df)
