@@ -365,7 +365,7 @@ with tab5:
     
     # Calcular jogos totais e aproveitamento
     jogos_totais = vitorias_por_dia + derrotas_por_dia
-    aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0).round(0)
+    aproveitamento = (vitorias_por_dia / jogos_totais * 100).dropna().round(0)
     
     # Informações gerais do jogador
     total_jogos = vitorias.sum() + derrotas.sum()
