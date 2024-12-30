@@ -362,11 +362,11 @@ with tab4:
 
     jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
     jogadores = sorted(set(jogadores))
+    jogadores = [x for x in jogadores if x != jogador_selecionado]
     
     # Contagem de parcerias
     contagem_parcerias = pd.Series(parcerias).value_counts()
     contagem_parcerias = contagem_parcerias.reindex(index=jogadores)
-    jogadores = [x for x in jogadores if x != jogador_selecionado]
     contagem_parcerias = contagem_parcerias.fillna(0).sort_values(ascending=False).astype(int)
     
     # Top 5 parcerias mais frequentes
