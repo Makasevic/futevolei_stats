@@ -250,7 +250,7 @@ for i in range(df.shape[0]):
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 # Interface Streamlit
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["Jogadores", "Duplas", "Jogos", "Evolução", "Detalhamento"])
+tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Duplas", "Jogos", "Detalhamento"])
 
 # Adicionar seleção de período em cada aba
 periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
@@ -291,65 +291,8 @@ with tab3:
     df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
     st.dataframe(df_filtrado.drop(['dupla_winner','dupla_loser'], axis=1).sort_index(ascending=False))
 
+
 with tab4:
-    st.title("Aproveitamento de Jogadores ao Longo do Tempo")
-
-    # Lista única de jogadores
-    jogadores = list(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
-    jogadores = [x for x in jogadores if "Outro" not in x]
-    jogadores = sorted(set(jogadores))
-
-    # Criar subplots com uma linha para cada jogador
-    fig = make_subplots(
-        rows=len(jogadores),
-        cols=1,
-        shared_xaxes=False,  # Compartilhar eixo x
-        vertical_spacing=0.02  # Espaçamento vertical entre os gráficos
-    )
-
-    # Iterar sobre cada jogador e calcular aproveitamento
-    for idx, jogador in enumerate(jogadores, start=1):
-        # Filtrar vitórias e derrotas por jogador
-        vitorias = (df[["winner1", "winner2"]] == jogador).sum(axis=1)
-        derrotas = (df[["loser1", "loser2"]] == jogador).sum(axis=1)
-
-        # Consolidar por data
-        vitorias_por_dia = vitorias.groupby(df.index).sum()
-        derrotas_por_dia = derrotas.groupby(df.index).sum()
-
-        # Calcular jogos totais e aproveitamento
-        jogos_totais = vitorias_por_dia + derrotas_por_dia
-        aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0)
-
-        # Adicionar o gráfico do jogador aos subplots
-        fig.add_scatter(
-            x=aproveitamento.index,
-            y=aproveitamento,
-            mode="lines+markers",
-            name=jogador,
-            row=idx,
-            col=1,
-            line=dict(width=1),
-            marker=dict(size=4)
-        )
-
-        # Adicionar o nome do jogador no eixo y
-        fig.update_yaxes(title_text=jogador, row=idx, col=1)
-
-    # Ajustar layout
-    fig.update_layout(
-        height=150 * len(jogadores),  # Altura total do gráfico
-        showlegend=False,  # Não mostrar legenda
-        title="",
-        margin=dict(l=40, r=20, t=20, b=20),
-    )
-    fig.update_xaxes(title_text=None)  # Nome para o eixo x compartilhado
-
-    # Exibir o gráfico
-    st.plotly_chart(fig, use_container_width=True)
-
-
-with tab5:
     st.title("Análise Individual do Jogador")
     
     # Dropdown para selecionar o jogador
