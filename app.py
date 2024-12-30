@@ -378,6 +378,7 @@ with tab5:
     # Calcular jogos totais e aproveitamento
     jogos_totais = vitorias_por_dia + derrotas_por_dia
     aproveitamento = (vitorias_por_dia / jogos_totais * 100).fillna(0)
+    aproveitamento.index = pd.to_datetime(aproveitamento.index)
     
     # Gráfico de aproveitamento do jogador
     st.subheader("Aproveitamento ao longo do tempo")
