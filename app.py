@@ -132,7 +132,6 @@ def preparar_dados_confrontos_jogadores(df):
     saldo_final = saldo_final.set_index('Jogador')
     saldo_final = saldo_final.loc[~saldo_final.index.astype(str).str.contains("Outro"), 
                                   ~saldo_final.columns.astype(str).str.contains("Outro")]
-    saldo_final = style_dataframe(saldo_final)
     return saldo_final
 
 
@@ -256,6 +255,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Duplas", "Jogos", "Detalhamento"
 # Adicionar seleção de período em cada aba
 periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
 
+
 with tab1:
     st.title("Análise de Desempenho dos Jogadores")
     periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True, key="jogadores")
@@ -267,7 +267,7 @@ with tab1:
     st.dataframe(jogadores.set_index("rank"))
     st.subheader("Estatíticas dos confrontos")
     st.write("Esta tabela mostra o saldo de confrontos do jogador (linha) em relação a cada adversário (coluna).")
-    st.dataframe(preparar_dados_confrontos_jogadores(df), use_container_width=True, key="duplas")
+    st.dataframe(style_dataframe(preparar_dados_confrontos_jogadores(df)), use_container_width=True, key="duplas")
     st.subheader("Matriz de Parcerias")
     st.write("Esta tabela mostra quantas vezes cada jogador (linha) jogou com outro jogador como dupla (coluna).")
     matriz_parcerias = preparar_matriz_parcerias(df)
