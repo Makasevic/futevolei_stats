@@ -135,11 +135,7 @@ def preparar_dados_confrontos_jogadores(df):
     return saldo_final
 
 
-def preparar_dados_controntos_duplas(df):
-    # Criar as combinações de duplas
-    df["dupla_winner"] = df.apply(lambda row: " e ".join(sorted([row["winner1"], row["winner2"]])), axis=1)
-    df["dupla_loser"] = df.apply(lambda row: " e ".join(sorted([row["loser1"], row["loser2"]])), axis=1)
-    
+def preparar_dados_controntos_duplas(df):   
     # Criar uma lista única de duplas
     duplas = sorted(set(df["dupla_winner"].tolist() + df["dupla_loser"].tolist()))
     
@@ -242,6 +238,8 @@ def style_dataframe(df):
 pages = get_pages()
 data = [extrair_dados(page) for page in pages]
 df = pd.DataFrame(data, columns=["winner1", "winner2", "loser1", "loser2", "date"]).set_index("date")
+df["dupla_winner"] = df.apply(lambda row: " e ".join(sorted([row["winner1"], row["winner2"]])), axis=1)
+df["dupla_loser"] = df.apply(lambda row: " e ".join(sorted([row["loser1"], row["loser2"]])), axis=1)
 
 # Ordenar vencedores e perdedores
 for i in range(df.shape[0]):
