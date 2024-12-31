@@ -321,14 +321,18 @@ with tab2:
             st.subheader("Maiores Fregueses")
             df_saldo = preparar_dados_confrontos_jogadores(df)
             saldo_jogador = df_saldo.loc[jogador_selecionado, :]
+            
+            # Maiores Fregueses
             fregueses = saldo_jogador[saldo_jogador > 0].sort_values(ascending=False).head(5).reset_index()
-            fregueses.columns = ["Jogador", "Saldo de Vitórias"]
-            st.table(fregueses.set_index("Jogador"))
-
-            st.subheader("Maiores Carrascos")
+            fregueses.columns = ["Jogadores", "Saldo de Vitórias"]  # Adiciona o header "Jogadores"
+            st.subheader("Maiores Fregueses")
+            st.table(fregueses.set_index("Jogadores"))
+            
+            # Maiores Carrascos
             carrascos = saldo_jogador[saldo_jogador < 0].sort_values().head(5).reset_index()
-            carrascos.columns = ["Jogador", "Saldo de Vitórias"]
-            st.table(carrascos.set_index("Jogador"))
+            carrascos.columns = ["Jogadores", "Saldo de Vitórias"]  # Adiciona o header "Jogadores"
+            st.subheader("Maiores Carrascos")
+            st.table(carrascos.set_index("Jogadores"))
         else:
             st.write("Por favor, selecione um jogador para visualizar os dados.")
 
