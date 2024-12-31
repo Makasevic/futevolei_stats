@@ -17,20 +17,23 @@ periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", 
 
 with tab1:
     st.title("Jogadores")
-    periodo = st.radio("Período:", periodos)
+    periodo = st.radio("Período:", periodos, key="periodo_jogadores")
     df_filtrado = filtrar_por_periodo(df, periodo)
     estatisticas = calcular_estatisticas(df_filtrado, "jogadores")
     st.dataframe(estatisticas)
 
 with tab2:
     st.title("Duplas")
-    periodo = st.radio("Período:", periodos)
+    periodo = st.radio("Período:", periodos, key="periodo_duplas")
     df_filtrado = filtrar_por_periodo(df, periodo)
     estatisticas = calcular_estatisticas(df_filtrado, "duplas")
     st.dataframe(estatisticas)
 
 with tab3:
     st.title("Confrontos")
-    matriz = preparar_matriz_saldos(df, "jogadores")
+    periodo = st.radio("Período:", periodos, key="periodo_confrontos")
+    df_filtrado = filtrar_por_periodo(df, periodo)
+    matriz = preparar_matriz_saldos(df_filtrado, "jogadores")
     st.dataframe(matriz)
+
 
