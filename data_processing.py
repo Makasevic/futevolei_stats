@@ -19,10 +19,16 @@ def filtrar_por_periodo(df, periodo):
 
 def calcular_estatisticas(df, nivel):
     """Calcula estatísticas de vitórias, derrotas e aproveitamento para jogadores ou duplas."""
-    col_w, col_l = (["winner1", "winner2"], ["loser1", "loser2"]) if nivel == "jogadores" else (["dupla_winner"], ["dupla_loser"])
-
-    estatisticas_w = pd.Series([f"{x} e {y}" if nivel == "duplas" else x for row in df[col_w].values for x in row]).value_counts()
-    estatisticas_l = pd.Series([f"{x} e {y}" if nivel == "duplas" else x for row in df[col_l].values for x in row]).value_counts()
+    if nivel == "jogadores":
+        col_w, col_l = ["winner1", "winner2"], ["loser1", "loser2"]
+        estatisticas_w = pd.Series([x for row in df[col_w].values for x in row]).value_counts()
+        estatisticas_l = pd.Series([x for row in df[col_l].values for x in row]).value_counts()
+    elif nivel == "duplas":
+        col_w, col_l = ["dupla_winner"], ["dupla_loser"]
+        estatisticas_w = pd.Series(df[col_w[0]]).value_counts()
+        estatisticas_l = pd.Series(df[col_l[0]]).value_counts()
+    else:
+        raise ValueError("Nível inválido. Use 'jogadores' ou 'duplas'.")
 
     entidades = sorted(set(estatisticas_w.index) | set(estatisticas_l.index))
     estatisticas_w = estatisticas_w.reindex(entidades, fill_value=0)
@@ -35,6 +41,7 @@ def calcular_estatisticas(df, nivel):
         "derrotas": estatisticas_l,
         "aproveitamento": aproveitamento.round(0).astype(int).astype(str) + "%"
     }).sort_values(by=["aproveitamento", "vitórias"], ascending=False)
+
 
 def preparar_matriz_saldos(df, nivel):
     """Prepara uma matriz de saldo de confrontos para jogadores ou duplas."""
