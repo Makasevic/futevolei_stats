@@ -359,7 +359,7 @@ with tab4:
         st.subheader("Análise Individual da Dupla")
 
         duplas = preparar_dados_duplas(df)
-        dupla_selecionada = st.selectbox("Selecione uma dupla:", ["Selecione uma dupla"] + duplas["duplas"].tolist())
+        dupla_selecionada = st.selectbox("Selecione uma dupla:", sorted(["Selecione uma dupla"] + duplas["duplas"].tolist()))
 
         if dupla_selecionada != "Selecione uma dupla":
             dupla_vitorias = (df["dupla_winner"] == dupla_selecionada).sum()
