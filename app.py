@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
-from plotly.subplots import make_subplots
 import plotly.express as px
 from datetime import datetime, timedelta
 import requests
+import numpy as np
 
 # =====================================================
 # CONFIGURAÇÃO E CABEÇALHOS
@@ -20,15 +20,21 @@ HEADERS = {
 # FUNÇÕES DE EXTRAÇÃO E PREPARAÇÃO DE DADOS
 # =====================================================
 
+def extrair_multiselect(prop):
+    """Extrai valores de um campo multi_select do Notion."""
+    if prop and prop.get('type') == 'multi_select':
+        return [item['name'] for item in prop.get('multi_select', [])]
+    return []
+
 def extrair_dados(page_data):
-    """Extrai vencedores, perdedores e a data de submissão de uma página do Notion."""
-    def extrair_multiselect(prop):
-        return [item['name'] for item in prop.get('multi_select', [])] if prop and prop.get('type') == 'multi_select' else []
-    
+    """
+    Extrai vencedores, perdedores e a data de submissão
+    de uma página do Notion.
+    """
     winners = extrair_multiselect(page_data['properties'].get('Dupla 1'))
     losers = extrair_multiselect(page_data['properties'].get('Dupla 2'))
     submission_date = page_data['properties'].get('Submission time', {}).get('created_time')
-    
+
     if submission_date:
         submission_date = datetime.strptime(submission_date, "%Y-%m-%dT%H:%M:%S.%fZ").date()
     else:
@@ -50,6 +56,7 @@ def get_pages():
         if not data.get("has_more"):
             break
         payload["start_cursor"] = data["next_cursor"]
+
     return results
 
 
@@ -65,11 +72,10 @@ def preparar_dataframe(pages):
     df["dupla_winner"] = df.apply(lambda row: " e ".join(sorted([row["winner1"], row["winner2"]])), axis=1)
     df["dupla_loser"] = df.apply(lambda row: " e ".join(sorted([row["loser1"], row["loser2"]])), axis=1)
 
-    # Ordenar vencedores e perdedores (garantindo consistência de nome)
-    for i in range(df.shape[0]):
-        df.iloc[i, 0:2] = df.iloc[i, 0:2].sort_values()
-        df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
-    
+    # Ordenar vencedores e perdedores (garantindo consistência)
+    df[["winner1", "winner2"]] = np.sort(df[["winner1", "winner2"]], axis=1)
+    df[["loser1", "loser2"]] = np.sort(df[["loser1", "loser2"]], axis=1)
+
     return df
 
 
@@ -150,7 +156,9 @@ def preparar_dados_duplas(df):
 
 def preparar_dados_confrontos_jogadores(df):
     """Retorna DataFrame com saldo de confrontos entre jogadores (linha vs coluna)."""
-    jogadores = sorted(set(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist()))
+    jogadores = sorted(
+        set(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    )
     saldos = pd.DataFrame(0, index=jogadores, columns=jogadores)
 
     for _, row in df.iterrows():
@@ -190,7 +198,9 @@ def preparar_dados_confrontos_duplas(df):
 
 def preparar_matriz_parcerias(df):
     """Prepara uma matriz com o número de vezes que cada jogador jogou COM outro jogador."""
-    jogadores = sorted(set(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist()))
+    jogadores = sorted(
+        set(df["winner1"].tolist() + df["winner2"].tolist() + df["loser1"].tolist() + df["loser2"].tolist())
+    )
     matriz_parcerias = pd.DataFrame(0, index=jogadores, columns=jogadores)
 
     for _, row in df.iterrows():
@@ -315,7 +325,6 @@ def exibir_aba_detalhamento(df):
         jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores_unicos)
 
         if jogador_selecionado != "Selecione um jogador":
-            # Cálculos de vitórias/derrotas para o jogador
             vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
             derrotas = (df[["loser1", "loser2"]] == jogador_selecionado).sum(axis=1)
 
@@ -432,6 +441,7 @@ def exibir_aba_detalhamento(df):
 
             st.subheader("Maiores Carrascos")
             st.table(carrascos.set_index("Dupla"))
+
         else:
             st.write("Por favor, selecione uma dupla para visualizar os dados.")
 
