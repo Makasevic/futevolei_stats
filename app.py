@@ -399,8 +399,26 @@ with tab4:
             fig.update_xaxes(title="Data", type="category")
             fig.update_yaxes(title="Aproveitamento (%)")
             st.plotly_chart(fig, use_container_width=True)
+        
+            # Saldo de confrontos
+            df_saldo_duplas = preparar_dados_controntos_duplas(df)
+            saldo_dupla = df_saldo_duplas.loc[dupla_selecionada, :]
+        
+            # Maiores fregueses (saldo positivo)
+            fregueses = saldo_dupla[saldo_dupla > 0].sort_values(ascending=False).head(5).reset_index()
+            fregueses.columns = ["Dupla", "Saldo de Vitórias"]
+        
+            # Maiores carrascos (saldo negativo)
+            carrascos = saldo_dupla[saldo_dupla < 0].sort_values().head(5).reset_index()
+            carrascos.columns = ["Dupla", "Saldo de Vitórias"]
+        
+            # Exibir tabelas
+            st.subheader("Maiores Fregueses")
+            st.table(fregueses.set_index("Dupla"))
+        
+            st.subheader("Maiores Carrascos")
+            st.table(carrascos.set_index("Dupla"))
         else:
             st.write("Por favor, selecione uma dupla para visualizar os dados.")
-
 
 
