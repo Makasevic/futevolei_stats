@@ -160,7 +160,6 @@ def preparar_dados_controntos_duplas(df):
     saldo_final_duplas = saldo_final_duplas.set_index('Dupla')
     saldo_final_duplas = saldo_final_duplas.loc[~saldo_final_duplas.index.astype(str).str.contains("Outro"), 
                                                 ~saldo_final_duplas.columns.astype(str).str.contains("Outro")]
-    saldo_final_duplas = style_dataframe(saldo_final_duplas)
     return saldo_final_duplas
 
 
@@ -250,7 +249,7 @@ for i in range(df.shape[0]):
     df.iloc[i, 2:4] = df.iloc[i, 2:4].sort_values()
 
 # Interface Streamlit
-tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Duplas", "Jogos", "Detalhamento"])
+tab1, tab2, tab3, tab4 = st.tabs(["Jogadores", "Detalhamento", "Jogos"])
 
 # Adicionar seleção de período em cada aba
 periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
@@ -274,26 +273,6 @@ with tab1:
     st.dataframe(matriz_parcerias, use_container_width=True)
 
 with tab2:
-    st.title("Análise de Desempenho das Duplas")
-    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True, key="jogos")
-    df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
-
-    duplas = preparar_dados_duplas(df_filtrado)
-    exibir_graficos(duplas, "duplas", "Dupla")
-    st.subheader("Estatíticas das duplas")
-    st.dataframe(duplas.set_index("duplas"))
-    st.subheader("Estatíticas dos confrontos")
-    st.write("Esta tabela mostra o saldo de confrontos da dupla (na linha) em relação a cada dupla adversária (na coluna).")
-    st.dataframe(preparar_dados_controntos_duplas(df), use_container_width=True)
-
-with tab3:
-    st.title("Jogos Registrados")
-    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
-    df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
-    st.dataframe(df_filtrado.drop(['dupla_winner','dupla_loser'], axis=1).sort_index(ascending=False))
-
-
-with tab4:
     st.title("Análise Individual")
     
     # Botão de opção para alternar entre Jogador e Duplas
@@ -421,4 +400,8 @@ with tab4:
         else:
             st.write("Por favor, selecione uma dupla para visualizar os dados.")
 
-
+with tab3:
+    st.title("Jogos Registrados")
+    periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True)
+    df_filtrado = filtrar_por_periodo(df, periodo_selecionado)
+    st.dataframe(df_filtrado.drop(['dupla_winner','dupla_loser'], axis=1).sort_index(ascending=False))
