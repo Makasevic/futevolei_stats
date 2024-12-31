@@ -16,6 +16,7 @@ HEADERS = {
     "Notion-Version": "2022-06-28",
 }
 
+
 # =====================================================
 # FUNÇÕES DE EXTRAÇÃO E PREPARAÇÃO DE DADOS
 # =====================================================
@@ -325,13 +326,13 @@ def exibir_aba_detalhamento(df):
         jogador_selecionado = st.selectbox("Selecione um jogador:", jogadores_unicos)
 
         if jogador_selecionado != "Selecione um jogador":
+            # --- Cálculos de vitórias/derrotas ---
             vitorias = (df[["winner1", "winner2"]] == jogador_selecionado).sum(axis=1)
             derrotas = (df[["loser1", "loser2"]] == jogador_selecionado).sum(axis=1)
-
             vitorias_por_dia = vitorias.groupby(df.index).sum()
             derrotas_por_dia = derrotas.groupby(df.index).sum()
-            jogos_totais = vitorias_por_dia + derrotas_por_dia
 
+            jogos_totais = vitorias_por_dia + derrotas_por_dia
             aproveitamento = (vitorias_por_dia / jogos_totais * 100).dropna().round(0)
             total_jogos = vitorias.sum() + derrotas.sum()
             total_vitorias = vitorias.sum()
@@ -346,7 +347,7 @@ def exibir_aba_detalhamento(df):
             st.write(f"**Derrotas:** {total_derrotas}")
             st.write(f"**Aproveitamento médio:** {media_aproveitamento:.2f}%")
 
-            # Gráfico de aproveitamento ao longo do tempo
+            # --- Gráfico de aproveitamento ao longo do tempo ---
             st.subheader("Aproveitamento ao longo do tempo")
             fig = px.line(
                 x=aproveitamento.index,
@@ -360,7 +361,7 @@ def exibir_aba_detalhamento(df):
             fig.update_yaxes(title="Aproveitamento (%)")
             st.plotly_chart(fig, use_container_width=True)
 
-            # Tabelas de maiores fregueses/carrascos
+            # --- Tabelas de Fregueses e Carrascos ---
             st.subheader("Maiores Fregueses")
             df_saldo = preparar_dados_confrontos_jogadores(df)
             saldo_jogador = df_saldo.loc[jogador_selecionado, :]
@@ -372,6 +373,49 @@ def exibir_aba_detalhamento(df):
             carrascos = saldo_jogador[saldo_jogador < 0].sort_values().head(5).reset_index()
             carrascos.columns = ["Jogador", "Saldo de Vitórias"]
             st.table(carrascos.set_index("Jogador"))
+
+            # --- Maiores e Menores Parcerias (TOP 5) ---
+            # Calcula quantas vezes o jogador escolhido jogou em parceria com cada outro
+            parceiros_count = {}
+            for _, row in df.iterrows():
+                dupla_venc = [row["winner1"], row["winner2"]]
+                dupla_perd = [row["loser1"], row["loser2"]]
+
+                # Verifica se está na dupla vencedora
+                if jogador_selecionado in dupla_venc:
+                    # Incrementa a contagem para o parceiro (o outro jogador da dupla)
+                    for p in dupla_venc:
+                        if p != jogador_selecionado:
+                            parceiros_count[p] = parceiros_count.get(p, 0) + 1
+
+                # Verifica se está na dupla perdedora
+                if jogador_selecionado in dupla_perd:
+                    for p in dupla_perd:
+                        if p != jogador_selecionado:
+                            parceiros_count[p] = parceiros_count.get(p, 0) + 1
+
+            # Converte em Series para facilitar sort
+            parceiros_series = pd.Series(parceiros_count).sort_values(ascending=False)
+            # Remove o próprio jogador e "Outro" (se houver)
+            parceiros_series = parceiros_series.drop(labels=[jogador_selecionado], errors="ignore")
+            parceiros_series = parceiros_series[~parceiros_series.index.str.contains("Outro")]
+
+            # Maiores parcerias (top 5)
+            maiores_parcerias = parceiros_series.head(5).reset_index()
+            maiores_parcerias.columns = ["Jogador", "Número de Jogos"]
+
+            # Menores parcerias (bottom 5)
+            # Observação: caso queira filtrar parceiros que jogaram pelo menos 1 vez, você pode remover quem tem 0.
+            # Mas como aqui não guardamos quem não apareceu, não há zeros explícitos em 'parceiros_series'.
+            # Então, o bottom 5 é dos que efetivamente jogaram, mas menos vezes.
+            menores_parcerias = parceiros_series.tail(5).sort_values(ascending=True).reset_index()
+            menores_parcerias.columns = ["Jogador", "Número de Jogos"]
+
+            st.subheader("Maiores Parcerias (Top 5)")
+            st.table(maiores_parcerias.set_index("Jogador"))
+
+            st.subheader("Menores Parcerias (Top 5)")
+            st.table(menores_parcerias.set_index("Jogador"))
 
         else:
             st.write("Por favor, selecione um jogador para visualizar os dados.")
@@ -441,7 +485,6 @@ def exibir_aba_detalhamento(df):
 
             st.subheader("Maiores Carrascos")
             st.table(carrascos.set_index("Dupla"))
-
         else:
             st.write("Por favor, selecione uma dupla para visualizar os dados.")
 
