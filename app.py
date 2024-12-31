@@ -362,27 +362,42 @@ with tab4:
         dupla_selecionada = st.selectbox("Selecione uma dupla:", sorted(["Selecione uma dupla"] + duplas["duplas"].tolist()))
 
         if dupla_selecionada != "Selecione uma dupla":
-            dupla_vitorias = (df["dupla_winner"] == dupla_selecionada).sum()
-            dupla_derrotas = (df["dupla_loser"] == dupla_selecionada).sum()
-            total_jogos = dupla_vitorias + dupla_derrotas
-            aproveitamento = (dupla_vitorias / total_jogos * 100).round(2) if total_jogos > 0 else 0
+            dupla_vitorias = (df["dupla_winner"] == dupla_selecionada).astype(int)
+            dupla_derrotas = (df["dupla_loser"] == dupla_selecionada).astype(int)
+        
+            # Consolidar por data
+            vitorias_por_dia = dupla_vitorias.groupby(df.index).sum()
+            derrotas_por_dia = dupla_derrotas.groupby(df.index).sum()
+        
+            # Calcular jogos totais e aproveitamento
+            jogos_totais = vitorias_por_dia + derrotas_por_dia
+            aproveitamento_por_dia = (vitorias_por_dia / jogos_totais * 100).dropna().round(2)
+        
+            # Informações gerais
+            total_jogos = vitorias_por_dia.sum() + derrotas_por_dia.sum()
+            total_vitorias = vitorias_por_dia.sum()
+            total_derrotas = derrotas_por_dia.sum()
+            media_aproveitamento = aproveitamento_por_dia.mean()
         
             st.subheader("Informações gerais")
             st.write(f"**Dupla:** {dupla_selecionada}")
             st.write(f"**Número de jogos realizados:** {total_jogos}")
-            st.write(f"**Vitórias:** {dupla_vitorias}")
-            st.write(f"**Derrotas:** {dupla_derrotas}")
-            st.write(f"**Aproveitamento médio:** {aproveitamento:.2f}%")
+            st.write(f"**Vitórias:** {total_vitorias}")
+            st.write(f"**Derrotas:** {total_derrotas}")
+            st.write(f"**Aproveitamento médio:** {media_aproveitamento:.2f}%")
             
-            st.subheader("Aproveitamento por período")
-            # Correção do gráfico de barras
-            fig = px.bar(
-                x=["Vitórias", "Derrotas"],
-                y=[dupla_vitorias, dupla_derrotas],
-                labels={"x": "Resultado", "y": "Quantidade"},
-                title=f"Aproveitamento de {dupla_selecionada}"
+            # Gráfico de aproveitamento ao longo do tempo
+            st.subheader("Aproveitamento ao longo do tempo")
+            fig = px.line(
+                x=aproveitamento_por_dia.index,
+                y=aproveitamento_por_dia,
+                title=f"Aproveitamento de {dupla_selecionada} ao longo do tempo",
+                markers=True,
+                text=aproveitamento_por_dia.astype(str) + "%"
             )
-            fig.update_layout(yaxis_title="Quantidade", xaxis_title="Resultado")
+            fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
+            fig.update_xaxes(title="Data", type="category")
+            fig.update_yaxes(title="Aproveitamento (%)")
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.write("Por favor, selecione uma dupla para visualizar os dados.")
