@@ -365,8 +365,8 @@ with tab4:
             dupla_vitorias = (df["dupla_winner"] == dupla_selecionada).sum()
             dupla_derrotas = (df["dupla_loser"] == dupla_selecionada).sum()
             total_jogos = dupla_vitorias + dupla_derrotas
-            aproveitamento = (dupla_vitorias / total_jogos * 100).round(0)
-
+            aproveitamento = (dupla_vitorias / total_jogos * 100).round(2) if total_jogos > 0 else 0
+        
             st.subheader("Informações gerais")
             st.write(f"**Dupla:** {dupla_selecionada}")
             st.write(f"**Número de jogos realizados:** {total_jogos}")
@@ -375,7 +375,15 @@ with tab4:
             st.write(f"**Aproveitamento médio:** {aproveitamento:.2f}%")
             
             st.subheader("Aproveitamento por período")
-            st.bar_chart({"Vitórias": [dupla_vitorias], "Derrotas": [dupla_derrotas]})
+            # Correção do gráfico de barras
+            fig = px.bar(
+                x=["Vitórias", "Derrotas"],
+                y=[dupla_vitorias, dupla_derrotas],
+                labels={"x": "Resultado", "y": "Quantidade"},
+                title=f"Aproveitamento de {dupla_selecionada}"
+            )
+            fig.update_layout(yaxis_title="Quantidade", xaxis_title="Resultado")
+            st.plotly_chart(fig, use_container_width=True)
         else:
             st.write("Por favor, selecione uma dupla para visualizar os dados.")
 
