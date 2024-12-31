@@ -374,7 +374,7 @@ def exibir_aba_detalhamento(df):
         duplas = preparar_dados_duplas(df)
         dupla_selecionada = st.selectbox(
             "Selecione uma dupla:",
-            sorted(["Selecione uma dupla"] + duplas["duplas"].tolist())
+            ["Selecione uma dupla"] + sorted(duplas["duplas"].tolist())
         )
 
         if dupla_selecionada != "Selecione uma dupla":
