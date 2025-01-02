@@ -410,6 +410,7 @@ def exibir_aba_detalhamento(df):
             # Então, o bottom 5 é dos que efetivamente jogaram, mas menos vezes.
             menores_parcerias = parceiros_series.tail(5).sort_values(ascending=True).reset_index()
             menores_parcerias.columns = ["Jogador", "Número de Jogos"]
+            menores_parcerias = menores_parcerias[~menores_parcerias["Jogador"].isin(maiores_parcerias["Jogador"])]
 
             st.subheader("Adora jogar com")
             st.table(maiores_parcerias.set_index("Jogador"))
