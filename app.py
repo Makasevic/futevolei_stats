@@ -398,8 +398,9 @@ def exibir_aba_detalhamento(df):
             parceiros_series = pd.Series(parceiros_count).sort_values(ascending=False)
             # Remove o próprio jogador e "Outro" (se houver)
             parceiros_series = parceiros_series.drop(labels=[jogador_selecionado], errors="ignore")
+            parceiros_series = parceiros_series.reindex(index=jogadores_unicos).fillna(0)
             parceiros_series = parceiros_series[~parceiros_series.index.str.contains("Outro")]
-
+            
             # Maiores parcerias (top 5)
             maiores_parcerias = parceiros_series.head(5).reset_index()
             maiores_parcerias.columns = ["Jogador", "Número de Jogos"]
