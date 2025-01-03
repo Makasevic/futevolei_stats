@@ -412,6 +412,7 @@ def exibir_aba_detalhamento(df):
             menores_parcerias = parceiros_series.tail(5).sort_values(ascending=True).reset_index()
             menores_parcerias.columns = ["Jogador", "Número de Jogos"]
             menores_parcerias = menores_parcerias[~menores_parcerias["Jogador"].isin(maiores_parcerias["Jogador"])]
+            menores_parcerias = menores_parcerias[menores_parcerias["Jogador"]!=jogador_selecionado]
 
             st.subheader("Adora jogar com")
             st.table(maiores_parcerias.set_index("Jogador"))
