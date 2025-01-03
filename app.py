@@ -397,9 +397,11 @@ def exibir_aba_detalhamento(df):
             # Converte em Series para facilitar sort
             parceiros_series = pd.Series(parceiros_count).sort_values(ascending=False)
             # Remove o próprio jogador e "Outro" (se houver)
-            parceiros_series = parceiros_series.drop(labels=[jogador_selecionado], errors="ignore")
+            
             parceiros_series = parceiros_series.reindex(index=jogadores_unicos).fillna(0).astype(int).sort_values(ascending=False)
             parceiros_series = parceiros_series[~parceiros_series.index.str.contains("Outro")]
+            parceiros_series = parceiros_series[~parceiros_series.index.str.contains("Jogador")]
+            parceiros_series = parceiros_series[~parceiros_series.index.str.contains(jogador_selecionado)]
             
             # Maiores parcerias (top 5)
             maiores_parcerias = parceiros_series.head(5).reset_index()
@@ -414,8 +416,6 @@ def exibir_aba_detalhamento(df):
             menores_parcerias = parceiros_series.tail(5).sort_values(ascending=True).reset_index()
             menores_parcerias.columns = ["Jogador", "Número de Jogos"]
             menores_parcerias = menores_parcerias[~menores_parcerias["Jogador"].isin(maiores_parcerias["Jogador"])]
-            menores_parcerias = menores_parcerias[menores_parcerias["Jogador"]!=jogador_selecionado]
-            menores_parcerias = menores_parcerias[menores_parcerias["Jogador"]!="Selecione um jogador"]
             
             st.subheader("Adora jogar com")
             st.table(maiores_parcerias.set_index("Jogador"))
