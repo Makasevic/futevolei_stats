@@ -359,7 +359,7 @@ def exibir_aba_detalhamento(df):
             fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
             fig.update_xaxes(title="Data")
             fig.update_yaxes(title="Aproveitamento (%)")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, config={"staticPlot": True})
 
             # --- Tabelas de Fregueses e Carrascos ---
             st.subheader("Maiores Fregueses")
@@ -471,7 +471,7 @@ def exibir_aba_detalhamento(df):
             fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
             fig.update_xaxes(title="Data", type="category")
             fig.update_yaxes(title="Aproveitamento (%)")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, config={"staticPlot": True})
 
             # Saldo de confrontos entre duplas
             df_saldo_duplas = preparar_dados_confrontos_duplas(df)
