@@ -404,6 +404,8 @@ def exibir_aba_detalhamento(df):
             # Maiores parcerias (top 5)
             maiores_parcerias = parceiros_series.head(5).reset_index()
             maiores_parcerias.columns = ["Jogador", "Número de Jogos"]
+            maiores_parcerias = maiores_parcerias[maiores_parcerias["Jogador"]!=jogador_selecionado]
+            maiores_parcerias = maiores_parcerias[maiores_parcerias["Jogador"]!="Selecione um jogador"]
 
             # Menores parcerias (bottom 5)
             # Observação: caso queira filtrar parceiros que jogaram pelo menos 1 vez, você pode remover quem tem 0.
