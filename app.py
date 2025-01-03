@@ -357,7 +357,7 @@ def exibir_aba_detalhamento(df):
                 text=aproveitamento.astype(str) + "%"
             )
             fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
-            fig.update_xaxes(title="Data")
+            fig.update_xaxes(title="Data",type="category")
             fig.update_yaxes(title="Aproveitamento (%)")
             st.plotly_chart(fig, use_container_width=True, config={"staticPlot": True})
 
@@ -469,7 +469,7 @@ def exibir_aba_detalhamento(df):
                 text=aproveitamento_por_dia.astype(str) + "%"
             )
             fig.update_traces(mode="lines+markers+text", textposition="top center", textfont_size=12)
-            fig.update_xaxes(title="Data", type="category")
+            fig.update_xaxes(title="Data",type="category")
             fig.update_yaxes(title="Aproveitamento (%)")
             st.plotly_chart(fig, use_container_width=True, config={"staticPlot": True})
 
