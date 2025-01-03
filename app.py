@@ -337,7 +337,7 @@ def exibir_aba_detalhamento(df):
             total_jogos = vitorias.sum() + derrotas.sum()
             total_vitorias = vitorias.sum()
             total_derrotas = derrotas.sum()
-            total_aproveitamento = total_vitorias / total_jogos
+            total_aproveitamento = total_vitorias / total_jogos * 100
 
             # Exibe estatísticas
             st.subheader("Informações gerais")
@@ -447,7 +447,7 @@ def exibir_aba_detalhamento(df):
             total_jogos = vitorias_por_dia.sum() + derrotas_por_dia.sum()
             total_vitorias = vitorias_por_dia.sum()
             total_derrotas = derrotas_por_dia.sum()
-            total_aproveitamento = total_vitorias / total_jogos
+            total_aproveitamento = total_vitorias / total_jogos * 100
 
             st.subheader("Informações gerais")
             st.write(f"**Dupla:** {dupla_selecionada}")
