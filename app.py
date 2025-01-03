@@ -337,15 +337,15 @@ def exibir_aba_detalhamento(df):
             total_jogos = vitorias.sum() + derrotas.sum()
             total_vitorias = vitorias.sum()
             total_derrotas = derrotas.sum()
-            media_aproveitamento = aproveitamento.mean()
+            total_aproveitamento = total_vitorias / total_jogos
 
             # Exibe estatísticas
             st.subheader("Informações gerais")
             st.write(f"**Jogador:** {jogador_selecionado}")
-            st.write(f"**Número de jogos realizados:** {total_jogos}")
+            st.write(f"**Número de jogos:** {total_jogos}")
             st.write(f"**Vitórias:** {total_vitorias}")
             st.write(f"**Derrotas:** {total_derrotas}")
-            st.write(f"**Aproveitamento médio:** {media_aproveitamento:.2f}%")
+            st.write(f"**Aproveitamento:** {total_aproveitamento:.2f}%")
 
             # --- Gráfico de aproveitamento ao longo do tempo ---
             st.subheader("Aproveitamento ao longo do tempo")
@@ -447,14 +447,14 @@ def exibir_aba_detalhamento(df):
             total_jogos = vitorias_por_dia.sum() + derrotas_por_dia.sum()
             total_vitorias = vitorias_por_dia.sum()
             total_derrotas = derrotas_por_dia.sum()
-            media_aproveitamento = aproveitamento_por_dia.mean()
+            total_aproveitamento = total_vitorias / total_jogos
 
             st.subheader("Informações gerais")
             st.write(f"**Dupla:** {dupla_selecionada}")
-            st.write(f"**Número de jogos realizados:** {total_jogos}")
+            st.write(f"**Número de jogos:** {total_jogos}")
             st.write(f"**Vitórias:** {total_vitorias}")
             st.write(f"**Derrotas:** {total_derrotas}")
-            st.write(f"**Aproveitamento médio:** {media_aproveitamento:.2f}%")
+            st.write(f"**Aproveitamento:** {total_aproveitamento:.2f}%")
 
             # Gráfico de aproveitamento ao longo do tempo
             st.subheader("Aproveitamento ao longo do tempo")
