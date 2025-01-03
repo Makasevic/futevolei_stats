@@ -411,7 +411,7 @@ def exibir_aba_detalhamento(df):
             # Observação: caso queira filtrar parceiros que jogaram pelo menos 1 vez, você pode remover quem tem 0.
             # Mas como aqui não guardamos quem não apareceu, não há zeros explícitos em 'parceiros_series'.
             # Então, o bottom 5 é dos que efetivamente jogaram, mas menos vezes.
-            menores_parcerias = parceiros_series[~parceiros_series["Jogador"].isin(maiores_parcerias["Jogador"])]
+            menores_parcerias = parceiros_series[~parceiros_series.index.isin(maiores_parcerias["Jogador"])]
             menores_parcerias = menores_parcerias.tail(5).sort_values(ascending=True).reset_index()
             menores_parcerias.columns = ["Jogador", "Número de Jogos"]
             
