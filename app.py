@@ -400,22 +400,21 @@ def exibir_aba_detalhamento(df):
             
             parceiros_series = parceiros_series.reindex(index=jogadores_unicos).fillna(0).astype(int).sort_values(ascending=False)
             parceiros_series = parceiros_series[~parceiros_series.index.str.contains("Outro")]
-            parceiros_series = parceiros_series[~parceiros_series.index.str.contains("Jogador")]
+            parceiros_series = parceiros_series[~parceiros_series.index.str.contains("Selecione um jogador")]
             parceiros_series = parceiros_series[~parceiros_series.index.str.contains(jogador_selecionado)]
             
             # Maiores parcerias (top 5)
             maiores_parcerias = parceiros_series.head(5).reset_index()
             maiores_parcerias.columns = ["Jogador", "Número de Jogos"]
-            maiores_parcerias = maiores_parcerias[maiores_parcerias["Jogador"]!=jogador_selecionado]
-            maiores_parcerias = maiores_parcerias[maiores_parcerias["Jogador"]!="Selecione um jogador"]
 
             # Menores parcerias (bottom 5)
             # Observação: caso queira filtrar parceiros que jogaram pelo menos 1 vez, você pode remover quem tem 0.
             # Mas como aqui não guardamos quem não apareceu, não há zeros explícitos em 'parceiros_series'.
             # Então, o bottom 5 é dos que efetivamente jogaram, mas menos vezes.
-            menores_parcerias = parceiros_series.tail(5).sort_values(ascending=True).reset_index()
+            menores_parcerias = parceiros_series[~parceiros_series["Jogador"].isin(maiores_parcerias["Jogador"])]
+            menores_parcerias = menores_parcerias.tail(5).sort_values(ascending=True).reset_index()
             menores_parcerias.columns = ["Jogador", "Número de Jogos"]
-            menores_parcerias = menores_parcerias[~menores_parcerias["Jogador"].isin(maiores_parcerias["Jogador"])]
+            
             
             st.subheader("Adora jogar com")
             st.table(maiores_parcerias.set_index("Jogador"))
