@@ -280,7 +280,8 @@ def exibir_graficos(df, eixo_x, titulo):
 
 def exibir_aba_jogadores(df):
     """Exibe a aba 1: Análise de Desempenho dos Jogadores."""
-    st.title("Análise de Desempenho dos Jogadores")
+    st.title("Redinha stats")
+    
 
     periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
     periodo_selecionado = st.radio("Selecione o período:", periodos, horizontal=True, key="jogadores")
