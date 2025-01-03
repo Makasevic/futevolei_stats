@@ -522,7 +522,7 @@ def main():
 
     redinhas = ["André","Benchi","Bruno","Chapa","Diego","Ditz","Gustavo","JC","Lucas","Magriça","Marcelo","Nahon","Torres","Outro_2"]
     if filtro_jogadores:
-        jogadores_especificos = st.sidebar.multiselect("Selecione os jogadores a manter:",)
+        jogadores_especificos = st.sidebar.multiselect("Selecione os jogadores a manter:", redinhas)
         if jogadores_especificos:
             # Renomear os jogadores fora da lista para "Outros_1"
             for col in ["winner1", "winner2", "loser1", "loser2"]:
