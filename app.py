@@ -522,11 +522,8 @@ def main():
 
     redinhas = ["André","Benchi","Bruno","Chapa","Diego","Ditz","Gustavo","JC","Lucas","Magriça","Marcelo","Nahon","Torres","Outro_2"]
     if filtro_jogadores:
-        jogadores_especificos = st.sidebar.multiselect("Selecione os jogadores a manter:", redinhas)
-        if jogadores_especificos:
-            # Renomear os jogadores fora da lista para "Outros_1"
-            for col in ["winner1", "winner2", "loser1", "loser2"]:
-                df[col] = df[col].apply(lambda x: x if x in redinhas else "Outros_1")
+        for col in ["winner1", "winner2", "loser1", "loser2"]:
+            df[col] = df[col].apply(lambda x: x if x in redinhas else "Outros_1")
 
     # 3) Criar as abas
     tab1, tab2, tab3 = st.tabs(["Jogadores", "Detalhamento", "Jogos"])
