@@ -280,7 +280,7 @@ def exibir_graficos(df, eixo_x, titulo):
 
 def exibir_aba_jogadores(df):
     """Exibe a aba 1: Análise de Desempenho dos Jogadores."""
-    st.title("Redinha stats")
+    st.title("Estatísticas do Redinha")
     
 
     periodos = ["Último dia", "1 semana", "1 mês", "3 meses", "6 meses", "1 ano", "Todos os dados"]
