@@ -518,7 +518,7 @@ def main():
 
     # 2) Aplicar filtro global e renomear jogadores
     st.sidebar.header("Filtros Globais")
-    filtro_jogadores = st.sidebar.checkbox("Filtrar por jogadores específicos")
+    filtro_jogadores = st.sidebar.checkbox("Apenas redinha")
 
     redinhas = ["André","Benchi","Bruno","Chapa","Diego","Ditz","Gustavo","JC","Lucas","Magriça","Marcelo","Nahon","Torres","Outro_2"]
     if filtro_jogadores:
